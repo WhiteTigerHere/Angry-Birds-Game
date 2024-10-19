@@ -89,6 +89,7 @@ public class FirstScreen implements Screen {
     public void resize(int width, int height) {
         // Handle screen resizing
         game.batch.getProjectionMatrix().setToOrtho2D(0,0,width,height);
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
