@@ -5,28 +5,30 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import static com.badlogic.gdx.Gdx.files;
 
 public class FirstScreen implements Screen {
     private final Core game;
-    private SpriteBatch batch;
+    //private SpriteBatch batch;
     private Texture backgroundTexture;
     private Stage stage;
     private Skin skin;
 
     public FirstScreen(Core game) {
-        this.game = game;  // Use LibGDX's built-in Game class
+        this.game = game;
     }
 
     @Override
     public void show() {
-        batch = new SpriteBatch();
+        //batch = new SpriteBatch();
         backgroundTexture = new Texture(Gdx.files.internal("newscreen.jpg")); // Load background image
 
         // Load the skin for UI elements
@@ -49,12 +51,19 @@ public class FirstScreen implements Screen {
         TextButton playButton = new TextButton("Play", skin);
         mainTable.add(playButton).width(200).height(80).padBottom(150).center(); // Center the button horizontally
 
-        // Add a click listener to the play button
-        playButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
+//        // Add a click listener to the play button
+//        playButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
+//            @Override
+//            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+//                // Transition to the game screen
+//                game.setScreen(new GameScreen(game));
+//            }
+//        });
+        playButton.addListener(new ClickListener() {
             @Override
-            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-                // Transition to the game screen
-                game.setScreen(new GameScreen(game));
+            public void clicked(InputEvent event, float x, float y) {
+                // Transition to the MenuScreen
+                game.setScreen(new MainMenu(game));
             }
         });
     }
@@ -67,9 +76,9 @@ public class FirstScreen implements Screen {
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 
         // Draw the background
-        batch.begin();
-        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.end();
+        game.batch.begin();
+        game.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        game.batch.end();
 
         // Update and draw the stage (UI)
         stage.act();
@@ -79,7 +88,7 @@ public class FirstScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         // Handle screen resizing
-        batch.getProjectionMatrix().setToOrtho2D(0,0,width,height);
+        game.batch.getProjectionMatrix().setToOrtho2D(0,0,width,height);
     }
 
     @Override
@@ -96,7 +105,7 @@ public class FirstScreen implements Screen {
 
     @Override
     public void dispose() {
-        batch.dispose();
+        game.batch.dispose();
         backgroundTexture.dispose();
         stage.dispose();
         skin.dispose();

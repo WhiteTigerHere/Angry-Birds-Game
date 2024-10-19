@@ -13,9 +13,17 @@ public class Core extends Game {
     public void create() {
         batch=new SpriteBatch();
         setScreen(new FirstScreen(this));
-        //setScreen(new FirstScreen(this));
+
+        //setScreen(new MenuScreen(this));
         //bkgtexture = new Texture("libgdxlogo.png");
     }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        super.dispose();
+    }
+
 
     @Override
     public void render(){
