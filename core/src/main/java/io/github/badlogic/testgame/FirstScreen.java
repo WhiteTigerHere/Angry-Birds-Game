@@ -73,8 +73,8 @@ public class FirstScreen implements Screen {
     @Override
     public void show() {
         batch = new SpriteBatch();
-        backgroundTexture = new Texture(Gdx.files.internal("libgdxlogo.png")); // Load background image
-        font = new BitmapFont(Gdx.files.internal("font.fnt")); // Load your font
+        backgroundTexture = new Texture(Gdx.files.internal("bkg.png")); // Load background image
+        //font = new BitmapFont(Gdx.files.internal("font.fnt")); // Load your font
         shapeRenderer = new ShapeRenderer();
 
         // Create rectangles for buttons
@@ -82,11 +82,11 @@ public class FirstScreen implements Screen {
         exitButton = new Rectangle(300, 300, 200, 60);  // Exit Button
 
         // Load music and sound effects
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("menu_music.m4a"));
-        backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+        //backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("menu_music.m4a"));
+        //backgroundMusic.setLooping(true);
+        //backgroundMusic.play();
 
-        clickSound = Gdx.audio.newSound(Gdx.files.internal("click.m4a"));
+        //clickSound = Gdx.audio.newSound(Gdx.files.internal("click.m4a"));
     }
 
     @Override
@@ -98,8 +98,8 @@ public class FirstScreen implements Screen {
         // Draw elements
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // Draw background
-        font.draw(batch, "Start Game", startButton.x + 20, startButton.y + 40);
-        font.draw(batch, "Exit", exitButton.x + 20, exitButton.y + 40);
+        //font.draw(batch, "Start Game", startButton.x + 20, startButton.y + 40);
+        //font.draw(batch, "Exit", exitButton.x + 20, exitButton.y + 40);
         batch.end();
 
         // Optional: draw button shapes (just for visualization, can be removed)
