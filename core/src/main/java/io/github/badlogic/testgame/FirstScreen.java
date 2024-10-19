@@ -37,7 +37,7 @@ public class FirstScreen implements Screen {
         // Create a stage and set it as the input processor
         stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
-
+//kk
         // Create a table for layout
         Table mainTable = new Table();
         mainTable.setFillParent(true); // Make the table fill the parent (stage)

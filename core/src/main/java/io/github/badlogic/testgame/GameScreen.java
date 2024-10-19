@@ -28,7 +28,7 @@ public class GameScreen implements Screen {
     public GameScreen(Game game) {
         this.game = game;  // Use LibGDX's Game class to manage screens
     }
-
+//k
     @Override
     public void show() {
         batch = new SpriteBatch();
