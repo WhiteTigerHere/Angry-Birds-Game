@@ -9,8 +9,8 @@ public class Core extends Game {
 
     @Override
     public void create() {
-
-        setScreen(new FirstScreen(this));
+        setScreen(new NewScreen(this));
+        //setScreen(new FirstScreen(this));
         //bkgtexture = new Texture("libgdxlogo.png");
     }
 }
