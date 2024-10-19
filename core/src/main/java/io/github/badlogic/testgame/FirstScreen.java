@@ -24,37 +24,6 @@ public class FirstScreen implements Screen {
         this.game = game;  // Use LibGDX's built-in Game class
     }
 
-//    @Override
-//    public void show() {
-//        batch = new SpriteBatch();
-//        backgroundTexture = new Texture(Gdx.files.internal("newscreen.jpg")); // Load background image
-//
-//        // Load the skin for UI elements
-//        skin = new Skin(files.internal("uiskin.json"));
-//
-//        // Create a stage and set it as the input processor
-//        stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-//        Gdx.input.setInputProcessor(stage);
-//
-//        // Create a table for layout
-//        Table mainTable = new Table();
-//        mainTable.setFillParent(true);
-//        stage.addActor(mainTable);
-//
-//        // Create a Play button
-//        TextButton playButton = new TextButton("Play", skin);
-//        mainTable.add(playButton).center().width(300).height(100);
-//
-//        // Add a click listener to the play button
-//        playButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
-//            @Override
-//            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-//                // Transition to the game screen
-//                game.setScreen(new GameScreen(game));
-//            }
-//        });
-//    }
-
     @Override
     public void show() {
         batch = new SpriteBatch();

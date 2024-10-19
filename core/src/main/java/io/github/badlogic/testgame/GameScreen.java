@@ -51,7 +51,7 @@ public class GameScreen implements Screen {
         batch.end();
 
         // Act and draw the stage (this renders UI)
-        stage.act(delta); // update stage (calls act() on actors)
+        stage.act(delta);
         stage.draw(); // draw the stage (renders UI components like the button)
 
         // Example of playing a sound when the bird "flies"
