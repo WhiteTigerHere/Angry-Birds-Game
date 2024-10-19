@@ -40,8 +40,8 @@ public class MainMenu implements Screen {
         shapeRenderer = new ShapeRenderer();
 
         // Create rectangles for buttons
-        //        startButton = new Rectangle(300, 400, 200, 60); // Start Button
-        //        exitButton = new Rectangle(300, 300, 200, 60);  // Exit Button
+        startButton = new Rectangle(300, 400, 200, 60); // Start Button
+        exitButton = new Rectangle(300, 300, 200, 60);  // Exit Button
 
         Stage stage = new Stage();
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
