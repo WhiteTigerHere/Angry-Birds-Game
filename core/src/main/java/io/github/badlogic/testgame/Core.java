@@ -12,7 +12,7 @@ public class Core extends Game {
     @Override
     public void create() {
         batch=new SpriteBatch();
-        setScreen(new NewScreen(this));
+        setScreen(new FirstScreen(this));
         //setScreen(new FirstScreen(this));
         //bkgtexture = new Texture("libgdxlogo.png");
     }
