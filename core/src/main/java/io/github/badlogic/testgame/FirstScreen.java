@@ -55,6 +55,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+
 
 public class FirstScreen implements Screen {
     private final Game game;
@@ -78,8 +82,20 @@ public class FirstScreen implements Screen {
         shapeRenderer = new ShapeRenderer();
 
         // Create rectangles for buttons
-        startButton = new Rectangle(300, 400, 200, 60); // Start Button
-        exitButton = new Rectangle(300, 300, 200, 60);  // Exit Button
+        //        startButton = new Rectangle(300, 400, 200, 60); // Start Button
+        //        exitButton = new Rectangle(300, 300, 200, 60);  // Exit Button
+
+        Stage stage = new Stage();
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        Gdx.input.setInputProcessor(stage);
+        TextButton button = new TextButton("Click Me", skin);
+
+        stage.addActor(button);
+
+        stage.act(Gdx.graphics.getDeltaTime()); // Update the stage
+        stage.draw(); // Render the stage and its actors
+
+
 
         // Load music and sound effects
         //backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("menu_music.m4a"));
