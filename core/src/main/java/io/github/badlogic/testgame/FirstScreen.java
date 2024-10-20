@@ -64,6 +64,7 @@ public class FirstScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 // Transition to the MenuScreen
                 game.setScreen(new MainMenu(game));
+                //game.setScreen(new StartNewGame(game));
             }
         });
     }

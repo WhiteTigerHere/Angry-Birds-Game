@@ -3,6 +3,8 @@ package io.github.badlogic.testgame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -24,9 +26,12 @@ public class MainMenu implements Screen {
         this.game = game;
     }
 
+
+
+
     @Override
     public void show() {
-        backgroundTexture = new Texture(Gdx.files.internal("bkg.png")); // Load background image
+        backgroundTexture = new Texture(Gdx.files.internal("commonbg.jpg")); // Load background image
 
         // Load the skin for UI elements
         skin = new Skin(files.internal("uiskin.json"));
