@@ -1,27 +1,26 @@
 package io.github.badlogic.testgame;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.graphics.Color;
+//kk
 import static com.badlogic.gdx.Gdx.files;
 
-public class MainMenu implements Screen {
+public class NewGame implements Screen{
     private final Core game;
     private Texture backgroundTexture;
     private Stage stage;
     private Skin skin;
-    private TextField playerNameField;
+    private final String playerName;
 
-    public MainMenu(Core game) {
+    public NewGame(Core game, String playerName) {
         this.game = game;
+        this.playerName = playerName;
     }
 
     @Override
@@ -40,21 +39,8 @@ public class MainMenu implements Screen {
         mainTable.setFillParent(true); // Make the table fill the parent (stage)
         stage.addActor(mainTable);
 
-        // Label for the player's name input
-        Label nameLabel = new Label("Enter PLayer Name:", skin);
-        nameLabel.setColor(Color.BLUE);
-        mainTable.add(nameLabel).padBottom(10).padTop(50).expandX().expandY().center(); // Add a label for the name input
-        mainTable.row();  // Move to the next row for the text field
-
-        // Add the player name TextField
-        playerNameField = new TextField("", skin);  // TextField for player name input
-        playerNameField.setMessageText("Player");  // Placeholder text
-        mainTable.add(playerNameField).width(300).height(50).padBottom(20).expandX().expandY().center();  // Set the size and padding for the TextField
-        mainTable.row();  // Move to the next row for the buttons
-
-
         // Add an invisible cell to push the button down
-        mainTable.add().expandY(); // Adjust the height value to control how far down the button will be
+        mainTable.add().expandY().height(400); // Adjust the height value to control how far down the button will be
         mainTable.row(); // Move to the next row of the table
 
         // Add the new screen button
@@ -65,12 +51,8 @@ public class MainMenu implements Screen {
         NewGameButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
             @Override
             public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-                String playerName = playerNameField.getText(); // Retrieve the player name
-                if (playerName.isEmpty()) {
-                    playerName = "Player"; // Default name if no input is given
-                }
-                // Transition to the game screen with the player's name
-                game.setScreen(new NewGame(game,playerName));
+                // Transition to the game screen
+                game.setScreen(new NewGame(game,"Player"));
             }
         });
 
@@ -135,3 +117,5 @@ public class MainMenu implements Screen {
         skin.dispose();
     }
 }
+
+
