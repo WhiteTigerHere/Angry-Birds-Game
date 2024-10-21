@@ -172,10 +172,14 @@ public void show() {
         mainTable.add(buttonTable).pad(10);
     }
 
-    mainTable.row();
+    mainTable.row().padTop(20);
+
+    // Add a new row for buttons and proper alignment
+    Table buttonTable = new Table();
+    mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
     TextButton startButton = new TextButton("Start Game", skin);
-    mainTable.add(startButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).pad(20);
+    buttonTable.add(startButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(100);
 
     startButton.addListener(new ClickListener() {
         @Override
@@ -185,6 +189,19 @@ public void show() {
             }
         }
     });
+
+    // Home button
+    TextButton homeButton = new TextButton("Home Page", skin);
+    buttonTable.add(homeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100);
+
+    homeButton.addListener(new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            game.setScreen(new MainMenu(game)); // Return to main menu
+        }
+    });
+
+    mainTable.row().padTop(20); // Add space before any future content (if needed)
 }
     private void selectTheme(int index) {
         selectedTheme = index;

@@ -1,74 +1,152 @@
 package io.github.badlogic.testgame;
 
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-//kk
 import static com.badlogic.gdx.Gdx.files;
 
-public class SavedGame implements Screen{
+public class SavedGame implements Screen {
     private final Core game;
     private Texture backgroundTexture;
     private Stage stage;
     private Skin skin;
+    private String playerName;
+    private ImageButton[] themeButtons;
+    private int selectedTheme = -1;
+    private Label[] themeLabels;
 
-    public SavedGame(Core game) {
+    public SavedGame(Core game, String playerName) {
         this.game = game;
+        this.playerName = playerName;
+    }
+
+    private BitmapFont generateFont(int baseFontSize) {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("ARIAL.TTF"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = baseFontSize; // Set base font size dynamically
+        BitmapFont font = generator.generateFont(parameter);
+        generator.dispose();
+        return font;
     }
 
     @Override
     public void show() {
-        backgroundTexture = new Texture(Gdx.files.internal("bkg.png")); // Load background image
+        backgroundTexture = new Texture(Gdx.files.internal("commonbg.jpg")); // Load background image
 
-        // Load the skin for UI elements
-        skin = new Skin(files.internal("uiskin.json"));
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        // Create a stage and set it as the input processor
+        // Generate a font based on screen size
+        int fontSize = Math.max(20, Gdx.graphics.getWidth() / 40); // Adjust font size based on screen width
+        BitmapFont font = generateFont(fontSize);
+
+        // Apply the font to the skin
+        skin.getFont("default-font").getData().setScale(fontSize / 20.0f); // Adjust font scale
+        skin.add("custom-font", font, BitmapFont.class);
+
         stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
 
-        // Create a table for layout
         Table mainTable = new Table();
-        mainTable.setFillParent(true); // Make the table fill the parent (stage)
+        mainTable.setFillParent(true);
+        mainTable.center();
         stage.addActor(mainTable);
 
-        // Add an invisible cell to push the button down
-        mainTable.add().expandY().height(400); // Adjust the height value to control how far down the button will be
-        mainTable.row(); // Move to the next row of the table
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        //labelStyle.fontColor = Color.BLACK;
 
-        // Add the new screen button
-        TextButton NewGameButton = new TextButton("New Game", skin);
-        mainTable.add(NewGameButton).width(200).height(80).padBottom(20).padLeft(50).expandX().left(); // Center the button horizontally
+        Label titleLabel = new Label("Choose theme and then press Continue Game", labelStyle); // Use custom font
+        mainTable.add(titleLabel).colspan(3).pad(20);
+        mainTable.row();
 
-        // Add a click listener to the new screen button
-        NewGameButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
+        themeButtons = new ImageButton[3];
+        themeLabels = new Label[3];
+        String[] themeNames = {"Classic", "Beach", "Halloween"};
+
+        for (int i = 0; i < 3; i++) {
+            final int index = i;
+            String imagePath = "theme" + (i + 1) + ".jpg";
+            Texture themeTexture = new Texture(Gdx.files.internal(imagePath));
+            ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+            style.up = new TextureRegionDrawable(new TextureRegion(themeTexture));
+            style.checked = new TextureRegionDrawable(new TextureRegion(themeTexture));
+            ImageButton themeButton = new ImageButton(style);
+            themeButtons[i] = themeButton;
+
+            themeButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    selectTheme(index);
+                }
+            });
+
+            Table buttonTable = new Table();
+            buttonTable.add(themeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.25f, mainTable)).center();
+            buttonTable.row();
+
+            Label themeLabel = new Label(themeNames[i], labelStyle); // Use the custom label style with larger font
+            themeLabels[i] = themeLabel;
+            buttonTable.add(themeLabel).padTop(10).center();
+
+            mainTable.add(buttonTable).pad(10);
+        }
+
+        mainTable.row().padTop(20);
+
+
+        // Add a new row for buttons and proper alignment
+        Table buttonTable = new Table();
+        mainTable.add(buttonTable).colspan(3).center().padTop(20);
+
+        TextButton continueButton = new TextButton("Continue", skin);
+        buttonTable.add(continueButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(100);
+
+        continueButton.addListener(new ClickListener() {
             @Override
-            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-                // Transition to the game screen
-                game.setScreen(new NewGame(game,"Player"));
+            public void clicked(InputEvent event, float x, float y) {
+                if (selectedTheme != -1) {
+                    game.setScreen(new MainMenu(game));   // for next screen take input of themeeeeeeeeeee
+                }
             }
         });
 
-        // Add the new screen button
-        TextButton SavedGameButton = new TextButton("Saved Game", skin);
-        mainTable.add(SavedGameButton).width(200).height(80).padBottom(20).padRight(50).expandX().right();// Center the button horizontally
 
-        // Add a click listener to the new screen button
-        SavedGameButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
+        // Home button
+        TextButton homeButton = new TextButton("Home Page", skin);
+        buttonTable.add(homeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100);
+
+        homeButton.addListener(new ClickListener() {
             @Override
-            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-                // Transition to the game screen
-                game.setScreen(new SavedGame(game));
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new MainMenu(game)); // Return to main menu
             }
         });
 
-        // Set the table position at the bottom
-        mainTable.bottom().padBottom(50); // Position the buttons at the bottom with padding from the screen bottom
+        mainTable.row().padTop(20); // Add space before any future content (if needed)
+
+    }
+
+    private void selectTheme(int index) {
+        selectedTheme = index;
+        for (int i = 0; i < themeButtons.length; i++) {
+            themeButtons[i].setChecked(i == index);
+            if (i == index) {
+                themeLabels[i].setColor(Color.YELLOW);
+            } else {
+                themeLabels[i].setColor(Color.WHITE);
+            }
+        }
     }
 
 
@@ -90,8 +168,7 @@ public class SavedGame implements Screen{
 
     @Override
     public void resize(int width, int height) {
-        // Handle screen resizing
-        game.batch.getProjectionMatrix().setToOrtho2D(0,0,width,height);
+        game.batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         stage.getViewport().update(width, height, true);
     }
 
@@ -113,7 +190,10 @@ public class SavedGame implements Screen{
         backgroundTexture.dispose();
         stage.dispose();
         skin.dispose();
+        for (ImageButton themeButton : themeButtons) {
+            if (themeButton != null) {
+                ((TextureRegionDrawable) themeButton.getStyle().imageUp).getRegion().getTexture().dispose();
+            }
+        }
     }
 }
-
-
