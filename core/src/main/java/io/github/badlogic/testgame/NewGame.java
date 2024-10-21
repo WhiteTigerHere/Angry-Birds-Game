@@ -41,76 +41,6 @@ public class NewGame implements Screen {
     }
 
 
-//    @Override
-//    public void show() {
-//        backgroundTexture = new Texture(Gdx.files.internal("commonbg.jpg")); // Load background image
-//
-//        skin = new Skin(files.internal("uiskin.json"));
-//
-//        stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-//        Gdx.input.setInputProcessor(stage);
-//
-//        // Create a table for layout
-//        Table mainTable = new Table();
-//        mainTable.setFillParent(true); // Make the table fill the parent (stage)
-//        stage.addActor(mainTable);
-//
-//        Label titleLabel = new Label("Choose theme and then press Start Game", skin);
-//        mainTable.add(titleLabel).colspan(3).pad(20);
-//        mainTable.row();
-//
-//        themeButtons = new ImageButton[3];
-//        themeLabels = new Label[3];
-//        String[] themeNames = {"Classic", "Beach", "Halloween"};
-//
-//        for (int i = 0; i < 3; i++) {
-//            final int index = i;
-//            String imagePath = "theme" + (i + 1) + ".jpg";
-//            Texture themeTexture = new Texture(Gdx.files.internal(imagePath));
-//            ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
-//            style.up = new TextureRegionDrawable(new TextureRegion(themeTexture));
-//            style.checked = new TextureRegionDrawable(new TextureRegion(themeTexture));
-//            ImageButton themeButton = new ImageButton(style);
-//            themeButtons[i] = themeButton;
-//
-//            themeButton.addListener(new ClickListener() {
-//                @Override
-//                public void clicked(InputEvent event, float x, float y) {
-//                    selectTheme(index);
-//                }
-//            });
-//
-//            // Add button and label dynamically sized relative to screen
-//            Table buttonTable = new Table();
-//            buttonTable.add(themeButton).width(Value.percentWidth(0.25f, mainTable))  // 25% of parent width
-//                .height(Value.percentWidth(0.25f, mainTable)); // Adjust height similarly
-//            buttonTable.row();
-//
-//            Label themeLabel = new Label(themeNames[i], skin);
-//            themeLabels[i] = themeLabel;
-//            buttonTable.add(themeLabel).padTop(10);
-//
-//            mainTable.add(buttonTable).pad(10);
-//        }
-//
-//        mainTable.row();
-//
-//        // Add the Start Game button
-//        TextButton startButton = new TextButton("Start Game", skin);
-//        mainTable.add(startButton).colspan(3).width(Value.percentWidth(0.25f, mainTable))  // 25% of parent width
-//            .height(Value.percentWidth(0.10f, mainTable))  // Adjust height relative to parent
-//            .pad(20);
-//
-//        startButton.addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                if (selectedTheme != -1) {
-//                    System.out.println("Starting game with theme: " + selectedTheme);
-//                    game.setScreen(new MainMenu(game)); // Start MainMenu or any screen based on logic
-//                }
-//            }
-//        });
-//    }
 @Override
 public void show() {
     backgroundTexture = new Texture(Gdx.files.internal("commonbg.jpg")); // Load background image
@@ -132,11 +62,21 @@ public void show() {
     mainTable.setFillParent(true);
     stage.addActor(mainTable);
 
-    Label.LabelStyle labelStyle = new Label.LabelStyle();
-    labelStyle.font = font;
+//    Label.LabelStyle labelStyle = new Label.LabelStyle();
+//    labelStyle.font = font;
     //labelStyle.fontColor = Color.BLACK;
 
-    Label titleLabel = new Label("Choose theme and then press Start Game", labelStyle); // Use custom font
+    // Set up label style for the title
+    Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
+    titleLabelStyle.font = font;
+    titleLabelStyle.fontColor = Color.BLUE; // Set font color of title label to blue
+
+    // Set up label style for theme names (keeping them white)
+    Label.LabelStyle themeLabelStyle = new Label.LabelStyle();
+    themeLabelStyle.font = font;
+    themeLabelStyle.fontColor = Color.WHITE; // Keep theme names white
+
+    Label titleLabel = new Label("Choose theme and then press Start Game", titleLabelStyle); // Use custom font
     mainTable.add(titleLabel).colspan(3).pad(20);
     mainTable.row();
 
@@ -165,7 +105,7 @@ public void show() {
         buttonTable.add(themeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.25f, mainTable));
         buttonTable.row();
 
-        Label themeLabel = new Label(themeNames[i], labelStyle); // Use the custom label style with larger font
+        Label themeLabel = new Label(themeNames[i], themeLabelStyle); // Use the custom label style with larger font
         themeLabels[i] = themeLabel;
         buttonTable.add(themeLabel).padTop(10);
 

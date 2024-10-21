@@ -3,7 +3,9 @@ package io.github.badlogic.testgame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,15 +13,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.graphics.Color;
 import static com.badlogic.gdx.Gdx.files;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 import java.util.ArrayList;
-
 
 public class MainMenu implements Screen {
     private final Core game;
@@ -27,13 +30,22 @@ public class MainMenu implements Screen {
     private Stage stage;
     private Skin skin;
     private TextField playerNameField;
-    private BitmapFont font;  // To store the scalable font
+    //private BitmapFont font;  // To store the scalable font
     private Label nameLabel;  // Reference for your label
     private FreeTypeFontGenerator fontGenerator;
 
 
     public MainMenu(Core game) {
         this.game = game;
+    }
+
+    private BitmapFont generateFont(int baseFontSize) {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("ARIAL.TTF"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = baseFontSize; // Set base font size dynamically
+        BitmapFont font = generator.generateFont(parameter);
+        generator.dispose();
+        return font;
     }
 
     @Override
@@ -43,31 +55,33 @@ public class MainMenu implements Screen {
         // Load the skin for UI elements
         skin = new Skin(files.internal("uiskin.json"));
 
+        // Generate a font based on screen size
+        int fontSize = Math.max(20, Gdx.graphics.getWidth() / 40); // Adjust font size based on screen width
+        BitmapFont font = generateFont(fontSize);
+
+        // Apply the font to the skin
+        skin.getFont("default-font").getData().setScale(fontSize / 20.0f); // Adjust font scale
+        skin.add("custom-font", font, BitmapFont.class);
+
         // Create a stage and set it as the input processor
         stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
-
-        // Create a FreeTypeFontGenerator to load a custom font
-        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("ARIAL.TTF")); // Provide the path to your TTF font file
-
-        // Generate a font with a default size
-        FreeTypeFontParameter fontParameter = new FreeTypeFontParameter();
-        fontParameter.size = 20;  // Initial size, will be adjusted later
-        font = fontGenerator.generateFont(fontParameter);
-
-        // Set up label style with generated font
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
 
         // Create a table for layout
         Table mainTable = new Table();
         mainTable.setFillParent(true); // Make the table fill the parent (stage)
         stage.addActor(mainTable);
 
+
+        // Set up label style with generated font
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor=Color.NAVY;
+
         // Label for the player's name input
-        nameLabel = new Label("Enter Player Name:", labelStyle);
-        nameLabel.setColor(Color.BLACK);
-        mainTable.add(nameLabel).padBottom(10).padTop(100).center(); // Add a label for the name input
+        Label nameLabel = new Label("Enter Player Name:", labelStyle);
+        //nameLabel.setColor(Color.BLACK);
+        mainTable.add(nameLabel).colspan(3).padTop(50); // Add a label for the name input
         mainTable.row();  // Move to the next row for the text field
 
         // Add the player name TextField
@@ -76,20 +90,20 @@ public class MainMenu implements Screen {
         // Set the alignment of the text (including placeholder) to center
         //playerNameField.setAlignment(Align.center);
 
-        mainTable.add(playerNameField).width(300).height(50).padBottom(40).center();  // Set the size and padding for the TextField
+        mainTable.add(playerNameField).colspan(3).width(300).height(50).padTop(30).padBottom(40).center();  // Set the size and padding for the TextField
         mainTable.row();  // Move to the next row for the buttons
 
-
         // Add an invisible cell to push the button down
-        mainTable.add().expandY(); // Adjust the height value to control how far down the button will be
+        //mainTable.add().expandX().expandY(); // Adjust the height value to control how far down the button will be
         mainTable.row(); // Move to the next row of the table
 
         // Create a table for the buttons at the bottom
         Table buttonTable = new Table();
+        mainTable.add(buttonTable).colspan(3).padTop(20);
+        //mainTable.row().padTop(20);
 
         TextButton NewGameButton = new TextButton("New Game", skin);
-        buttonTable.add(NewGameButton).expand().fill().width(200).height(80).padRight(25); // Center the button horizontally
-        //buttonTable.row();
+        buttonTable.add(NewGameButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(50);
 
         // Add a click listener to the new screen button
         NewGameButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
@@ -106,8 +120,7 @@ public class MainMenu implements Screen {
 
         // Add the new screen button
         TextButton SavedGameButton = new TextButton("Saved Game", skin);
-        buttonTable.add(SavedGameButton).expand().fill().width(200).height(80).padRight(25).padLeft(25);// Center the button horizontally
-        //buttonTable.row();
+        buttonTable.add(SavedGameButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(50);        //buttonTable.row();
 
         // Add a click listener to the new screen button
         SavedGameButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
@@ -120,8 +133,7 @@ public class MainMenu implements Screen {
 
         // Add the exit button
         TextButton ExitButton = new TextButton("Exit", skin);
-        buttonTable.add(ExitButton).expand().fill().width(200).height(80).padLeft(25); // Add padding and size for the exit button
-        //buttonTable.row();
+        buttonTable.add(ExitButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(50);        //buttonTable.row();
 
         // Add a click listener to the exit button
         ExitButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
@@ -132,9 +144,9 @@ public class MainMenu implements Screen {
             }
         });
 
-
+        mainTable.row().padTop(20);
         // Add button table to the main table and center it at the bottom
-        mainTable.add(buttonTable).padBottom(50).center().expandX().bottom();
+        //mainTable.add(buttonTable).padBottom(50).center().expandX().bottom();
 
     }
 
@@ -161,18 +173,13 @@ public class MainMenu implements Screen {
         game.batch.getProjectionMatrix().setToOrtho2D(0,0,width,height);
         stage.getViewport().update(width, height, true);
 
-        // Dynamically adjust the font size based on the window width
-        FreeTypeFontParameter fontParameter = new FreeTypeFontParameter();
-        fontParameter.size = Math.max(20, width / 30); // Adjust the font size based on the window width
-        font.dispose();  // Dispose the old font
-        font = fontGenerator.generateFont(fontParameter); // Generate a new font with the adjusted size
 
-        // Update the label's font
-        nameLabel.setStyle(new Label.LabelStyle(font, Color.BLACK));
-
-
-        // Resize the playerNameField width and height based on the screen dimensions
-        playerNameField.getStyle().font = font;  // Apply the resized font to the text field
+//        // Update the label's font
+//        nameLabel.setStyle(new Label.LabelStyle(font, Color.BLACK));
+//
+//
+//        // Resize the playerNameField width and height based on the screen dimensions
+//        playerNameField.getStyle().font = font;  // Apply the resized font to the text field
 
         // Resize the playerNameField width and height based on the screen dimensions
         playerNameField.setWidth(width * 0.4f);  // Set the width to 40% of the screen width
