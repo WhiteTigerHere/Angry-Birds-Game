@@ -16,19 +16,19 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import static com.badlogic.gdx.Gdx.files;
 
-public class SavedGame implements Screen {
+public class LostLevel implements Screen {
     private final Core game;
     private Texture backgroundTexture;
     private Stage stage;
     private Skin skin;
-    private String playerName;
+    //private final String playerName;
     private ImageButton[] themeButtons;
     private int selectedTheme = -1;
     private Label[] themeLabels;
 
-    public SavedGame(Core game, String playerName) {
+    public LostLevel(Core game) {
         this.game = game;
-        this.playerName = playerName;
+        //this.playerName = playerName;
     }
 
     private BitmapFont generateFont(int baseFontSize) {
@@ -40,9 +40,10 @@ public class SavedGame implements Screen {
         return font;
     }
 
+
     @Override
     public void show() {
-        backgroundTexture = new Texture(Gdx.files.internal("commonbg.jpg")); // Load background image
+        backgroundTexture = new Texture(Gdx.files.internal("levellost.png")); // Load background image
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
@@ -59,84 +60,54 @@ public class SavedGame implements Screen {
 
         Table mainTable = new Table();
         mainTable.setFillParent(true);
-        mainTable.center();
         stage.addActor(mainTable);
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
+//    Label.LabelStyle labelStyle = new Label.LabelStyle();
+//    labelStyle.font = font;
         //labelStyle.fontColor = Color.BLACK;
 
-        Label titleLabel = new Label("Choose theme and then press Continue Game", labelStyle); // Use custom font
-        mainTable.add(titleLabel).colspan(3).pad(20);
-        mainTable.row();
+        // Set up label style for the title
+        Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
+        titleLabelStyle.font = font;
+        titleLabelStyle.fontColor = Color.BLUE; // Set font color of title label to blue
 
-        themeButtons = new ImageButton[3];
-        themeLabels = new Label[3];
-        String[] themeNames = {"Classic", "Beach", "Halloween"};
-
-        for (int i = 0; i < 3; i++) {
-            final int index = i;
-            String imagePath = "theme" + (i + 1) + ".jpg";
-            Texture themeTexture = new Texture(Gdx.files.internal(imagePath));
-            ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
-            style.up = new TextureRegionDrawable(new TextureRegion(themeTexture));
-            style.checked = new TextureRegionDrawable(new TextureRegion(themeTexture));
-            ImageButton themeButton = new ImageButton(style);
-            themeButtons[i] = themeButton;
-
-            themeButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    selectTheme(index);
-                }
-            });
-
-            Table buttonTable = new Table();
-            buttonTable.add(themeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.25f, mainTable)).center();
-            buttonTable.row();
-
-            Label themeLabel = new Label(themeNames[i], labelStyle); // Use the custom label style with larger font
-            themeLabels[i] = themeLabel;
-            buttonTable.add(themeLabel).padTop(10).center();
-
-            mainTable.add(buttonTable).pad(10);
-        }
-
-        mainTable.row().padTop(20);
+        // Set up label style for theme names (keeping them white)
+        Label.LabelStyle themeLabelStyle = new Label.LabelStyle();
+        themeLabelStyle.font = font;
+        themeLabelStyle.fontColor = Color.WHITE; // Keep theme names white
 
 
         // Add a new row for buttons and proper alignment
         Table buttonTable = new Table();
         mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
-        TextButton continueButton = new TextButton("Continue", skin);
-        buttonTable.add(continueButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(100);
 
-        continueButton.addListener(new ClickListener() {
+        TextButton musicButton = new TextButton("Restart Level", skin);
+        buttonTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(20);
+
+        musicButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (selectedTheme != -1) {
-                    game.setScreen(new MainMenu(game));   // for next screen take input of themeeeeeeeeeee
-                }
+                //switch off music
             }
         });
 
+        mainTable.row().padTop(20);
 
-        // Home button
-        TextButton homeButton = new TextButton("Main Menu", skin);
-        buttonTable.add(homeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100);
 
-        homeButton.addListener(new ClickListener() {
+        TextButton resumeButton = new TextButton("Main Menu", skin);
+        mainTable.add(resumeButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(60);
+
+        resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new MainMenu(game)); // Return to main menu
             }
         });
 
+
         mainTable.row().padTop(20); // Add space before any future content (if needed)
-
     }
-
     private void selectTheme(int index) {
         selectedTheme = index;
         for (int i = 0; i < themeButtons.length; i++) {

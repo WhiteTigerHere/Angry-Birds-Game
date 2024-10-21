@@ -131,7 +131,7 @@ public void show() {
     });
 
     // Home button
-    TextButton homeButton = new TextButton("Home Page", skin);
+    TextButton homeButton = new TextButton("Main Menu", skin);
     buttonTable.add(homeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100);
 
     homeButton.addListener(new ClickListener() {
