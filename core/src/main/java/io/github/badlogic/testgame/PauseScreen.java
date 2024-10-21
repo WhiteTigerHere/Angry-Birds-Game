@@ -1,10 +1,8 @@
 package io.github.badlogic.testgame;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -14,21 +12,20 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import static com.badlogic.gdx.Gdx.files;
 
 public class PauseScreen implements Screen {
     private final Core game;
+    private GameScreen gameScreen;
     private Texture backgroundTexture;
     private Stage stage;
     private Skin skin;
-    //private final String playerName;
     private ImageButton[] themeButtons;
     private int selectedTheme = -1;
     private Label[] themeLabels;
 
-    public PauseScreen(Core game) {
+    public PauseScreen(Core game, GameScreen gameScreen) {
         this.game = game;
-        //this.playerName = playerName;
+        this.gameScreen = gameScreen;  // Assign the current game screen
     }
 
     private BitmapFont generateFont(int baseFontSize) {
@@ -62,9 +59,6 @@ public class PauseScreen implements Screen {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
-//    Label.LabelStyle labelStyle = new Label.LabelStyle();
-//    labelStyle.font = font;
-        //labelStyle.fontColor = Color.BLACK;
 
         // Set up label style for the title
         Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
@@ -87,9 +81,7 @@ public class PauseScreen implements Screen {
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (selectedTheme != -1) {
-                    game.setScreen(new MainMenu(game));   // for next screen take input of themeeeeeeeeeee
-                }
+                game.setScreen(new GameScreen(game, "level12.tmx")); // Replace with your actual level file name
             }
         });
 
@@ -124,25 +116,19 @@ public class PauseScreen implements Screen {
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenu(game)); // Return to main menu
+                resumeGame();
             }
         });
 
 
         mainTable.row().padTop(20); // Add space before any future content (if needed)
-    }
-    private void selectTheme(int index) {
-        selectedTheme = index;
-        for (int i = 0; i < themeButtons.length; i++) {
-            themeButtons[i].setChecked(i == index);
-            if (i == index) {
-                themeLabels[i].setColor(Color.YELLOW);
-            } else {
-                themeLabels[i].setColor(Color.WHITE);
-            }
-        }
+        Gdx.input.setInputProcessor(stage);
     }
 
+    private void resumeGame() {
+        gameScreen.setInputProcessor(); // Reset the input processor for the game screen
+        game.setScreen(gameScreen);
+    }
 
     @Override
     public void render(float delta) {
