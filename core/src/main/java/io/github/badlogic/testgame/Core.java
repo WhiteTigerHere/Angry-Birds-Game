@@ -24,8 +24,10 @@ public class Core extends Game {
     @Override
     public void create() {
         // Initialize the SpriteBatch
+
         batch = new SpriteBatch();
         setScreen(new FirstScreen(this));
+        MusicManager.getInstance().playMusic();
         //setScreen(new PauseScreen(this));
         //setScreen(new CompletedGame(this));
         //setScreen(new LostLevel(this));
@@ -50,6 +52,7 @@ public class Core extends Game {
     public void dispose() {
         // Dispose of the SpriteBatch and map renderer when done
         batch.dispose();
+        MusicManager.getInstance().dispose();
         //renderer.dispose();
         super.dispose();
     }

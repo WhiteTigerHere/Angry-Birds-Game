@@ -22,6 +22,7 @@ public class PauseScreen implements Screen {
     private ImageButton[] themeButtons;
     private int selectedTheme = -1;
     private Label[] themeLabels;
+    private TextButton musicButton;
 
     public PauseScreen(Core game, GameScreen gameScreen) {
         this.game = game;
@@ -87,13 +88,25 @@ public class PauseScreen implements Screen {
         });
 
 
-        TextButton musicButton = new TextButton("Music Off", skin);
+//        musicButton = new TextButton("Music Off", skin);
+       // buttonTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(50);
+
+//        musicButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                //switch off music
+//            }
+//        });
+        musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", skin);
         buttonTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(50);
 
         musicButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //switch off music
+                boolean newState = !GameSettings.getInstance().isMusicEnabled();
+                GameSettings.getInstance().setMusicEnabled(newState);
+                MusicManager.getInstance().updateMusicState();
+                musicButton.setText(newState ? "Music: On" : "Music: Off");
             }
         });
 

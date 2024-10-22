@@ -29,7 +29,9 @@ public class FirstScreen implements Screen {
     @Override
     public void show() {
         //batch = new SpriteBatch();
+
         backgroundTexture = new Texture(Gdx.files.internal("newscreen.jpg")); // Load background image
+        MusicManager.getInstance().playMusic();
 
         // Load the skin for UI elements
         skin = new Skin(files.internal("uiskin.json"));

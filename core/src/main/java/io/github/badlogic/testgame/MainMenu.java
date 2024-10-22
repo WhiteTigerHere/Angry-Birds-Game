@@ -33,6 +33,7 @@ public class MainMenu implements Screen {
     //private BitmapFont font;  // To store the scalable font
     private Label nameLabel;  // Reference for your label
     private FreeTypeFontGenerator fontGenerator;
+    private TextButton musicButton;
 
 
     public MainMenu(Core game) {
@@ -96,6 +97,33 @@ public class MainMenu implements Screen {
         // Add an invisible cell to push the button down
         //mainTable.add().expandX().expandY(); // Adjust the height value to control how far down the button will be
         mainTable.row(); // Move to the next row of the table
+
+
+
+        // Music button on top left
+        Table topLeftTable = new Table();
+        stage.addActor(topLeftTable);  // Directly add to stage instead of mainTable
+        topLeftTable.setFillParent(true);  // This ensures it takes the full screen space
+        topLeftTable.top().left().pad(50); // Align to top-left with padding
+
+        // Create the music button and ensure skin is applied
+        musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", skin);
+        musicButton.invalidateHierarchy();  // Force layout update right after creation
+        topLeftTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable));
+
+        // Add listener for toggling music
+        musicButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                boolean newState = !GameSettings.getInstance().isMusicEnabled();
+                GameSettings.getInstance().setMusicEnabled(newState);
+                MusicManager.getInstance().updateMusicState();
+
+                // Update the button's label and invalidate layout to force redraw
+                musicButton.setText(newState ? "Music: On" : "Music: Off");
+                musicButton.invalidate();  // Force the button to refresh its layout
+            }
+        });
 
         // Create a table for the buttons at the bottom
         Table buttonTable = new Table();
