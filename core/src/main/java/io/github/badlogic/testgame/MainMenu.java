@@ -149,6 +149,7 @@ public class MainMenu implements Screen {
         // Add the button directly to the stage (bypassing any table layout issues)
         stage.addActor(musicButton);
 
+
         // Create a table for the buttons at the bottom
         Table buttonTable = new Table();
         mainTable.add(buttonTable).colspan(3).padTop(20);
@@ -236,7 +237,6 @@ public class MainMenu implements Screen {
         // Resize the playerNameField width and height based on the screen dimensions
         playerNameField.setWidth(width * 0.4f);  // Set the width to 40% of the screen width
         playerNameField.setHeight(height * 0.08f); // Set the height to 8% of the screen height
-
     }
 
     @Override
