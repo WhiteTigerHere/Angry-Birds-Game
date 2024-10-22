@@ -51,7 +51,7 @@ public class MainMenu implements Screen {
 
     @Override
     public void show() {
-        backgroundTexture = new Texture(Gdx.files.internal("commonbg.jpg")); // Load background image
+        backgroundTexture = new Texture(files.internal("commonbg.jpg")); // Load background image
 
         // Load the skin for UI elements
         skin = new Skin(files.internal("uiskin.json"));
@@ -98,32 +98,56 @@ public class MainMenu implements Screen {
         //mainTable.add().expandX().expandY(); // Adjust the height value to control how far down the button will be
         mainTable.row(); // Move to the next row of the table
 
-
-
         // Music button on top left
-        Table topLeftTable = new Table();
-        stage.addActor(topLeftTable);  // Directly add to stage instead of mainTable
-        topLeftTable.setFillParent(true);  // This ensures it takes the full screen space
-        topLeftTable.top().left().pad(50); // Align to top-left with padding
+//        Table topLeftTable = new Table();
+//        stage.addActor(topLeftTable);  // Directly add to stage instead of mainTable
+//        topLeftTable.setFillParent(true);  // This ensures it takes the full screen space
+//        topLeftTable.top().left().pad(50); // Align to top-left with padding
+//
+//        // Create the music button and ensure skin is applied
+//        musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", skin);
+//        musicButton.invalidateHierarchy();  // Force layout update right after creation
+//        topLeftTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable));
+//
+//        // Add listener for toggling music
+//        musicButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                boolean newState = !GameSettings.getInstance().isMusicEnabled();
+//                GameSettings.getInstance().setMusicEnabled(newState);
+//                MusicManager.getInstance().updateMusicState();
+//
+//                // Update the button's label and invalidate layout to force redraw
+//                musicButton.setText(newState ? "Music: On" : "Music: Off");
+//                musicButton.invalidate();  // Force the button to refresh its layout
+//            }
+//        });
 
-        // Create the music button and ensure skin is applied
+        // Create the music button with correct initial state
         musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", skin);
-        musicButton.invalidateHierarchy();  // Force layout update right after creation
-        topLeftTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable));
 
-        // Add listener for toggling music
+        // Set explicit size for the button
+        musicButton.setSize(150, 50);  // Set the button size directly instead of percentWidth
+
+        // Set the button position manually if needed (optional)
+        musicButton.setPosition(50, Gdx.graphics.getHeight() - 100);  // Adjust position for top-left placement
+
+        // Add listener to toggle music state when clicked
         musicButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                // Toggle the music state
                 boolean newState = !GameSettings.getInstance().isMusicEnabled();
                 GameSettings.getInstance().setMusicEnabled(newState);
-                MusicManager.getInstance().updateMusicState();
+                MusicManager.getInstance().updateMusicState(); // Update music manager state
 
-                // Update the button's label and invalidate layout to force redraw
+                // Update the button label
                 musicButton.setText(newState ? "Music: On" : "Music: Off");
-                musicButton.invalidate();  // Force the button to refresh its layout
             }
         });
+
+        // Add the button directly to the stage (bypassing any table layout issues)
+        stage.addActor(musicButton);
 
         // Create a table for the buttons at the bottom
         Table buttonTable = new Table();
@@ -134,9 +158,9 @@ public class MainMenu implements Screen {
         buttonTable.add(NewGameButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(50);
 
         // Add a click listener to the new screen button
-        NewGameButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
+        NewGameButton.addListener(new ClickListener() {
             @Override
-            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+            public void clicked(InputEvent event, float x, float y) {
                 String playerName = playerNameField.getText(); // Retrieve the player name
                 if (playerName.isEmpty()) {
                     playerName = "Player"; // Default name if no input is given
@@ -151,9 +175,9 @@ public class MainMenu implements Screen {
         buttonTable.add(SavedGameButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(50);        //buttonTable.row();
 
         // Add a click listener to the new screen button
-        SavedGameButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
+        SavedGameButton.addListener(new ClickListener() {
             @Override
-            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+            public void clicked(InputEvent event, float x, float y) {
                 // Transition to the game screen
                 game.setScreen(new SavedGame(game, playerNameField.getName()));
             }
@@ -164,9 +188,9 @@ public class MainMenu implements Screen {
         buttonTable.add(ExitButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(50);        //buttonTable.row();
 
         // Add a click listener to the exit button
-        ExitButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
+        ExitButton.addListener(new ClickListener() {
             @Override
-            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+            public void clicked(InputEvent event, float x, float y) {
                 // Close the application
                 Gdx.app.exit();
             }
