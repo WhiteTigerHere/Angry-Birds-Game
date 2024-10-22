@@ -31,111 +31,113 @@ public class NewGame implements Screen {
         this.playerName = playerName;
     }
 
-    private BitmapFont generateFont(int baseFontSize) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("ARIAL.TTF"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = baseFontSize; // Set base font size dynamically
-        BitmapFont font = generator.generateFont(parameter);
-        generator.dispose();
-        return font;
-    }
+    @Override
+    public void show() {
+        // load background texture
+        backgroundTexture = new Texture(Gdx.files.internal("commonbg.jpg"));
 
+        // load skin
+        skin=game.skin;
 
-@Override
-public void show() {
-    backgroundTexture = new Texture(Gdx.files.internal("commonbg.jpg")); // Load background image
+        // font based on screen size
+        int fontSize = Math.max(20, Gdx.graphics.getWidth() / 40);
+        BitmapFont font = game.generateFont(fontSize);
 
-    skin = new Skin(Gdx.files.internal("uiskin.json"));
+        // apply font to skin
+        skin.getFont("default-font").getData().setScale(fontSize / 20.0f);
+        skin.add("custom-font", font, BitmapFont.class);
 
-    int fontSize = Math.max(20, Gdx.graphics.getWidth() / 40);
-    BitmapFont font = generateFont(fontSize);
+        // set up stage and input processor
+        stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        Gdx.input.setInputProcessor(stage);
 
-    skin.getFont("default-font").getData().setScale(fontSize / 20.0f);
-    skin.add("custom-font", font, BitmapFont.class);
+        // create main table
+        Table mainTable = new Table();
+        mainTable.setFillParent(true);
+        stage.addActor(mainTable);
 
-    stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-    Gdx.input.setInputProcessor(stage);
+        // set up label styles
+        Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
+        titleLabelStyle.font = font;
+        titleLabelStyle.fontColor = Color.BLUE;
 
-    Table mainTable = new Table();
-    mainTable.setFillParent(true);
-    stage.addActor(mainTable);
+        Label.LabelStyle themeLabelStyle = new Label.LabelStyle();
+        themeLabelStyle.font = font;
+        themeLabelStyle.fontColor = Color.WHITE;
 
-    Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
-    titleLabelStyle.font = font;
-    titleLabelStyle.fontColor = Color.BLUE;
+        // add title label
+        Label titleLabel = new Label("Choose theme and then press Start Game", titleLabelStyle);
+        mainTable.add(titleLabel).colspan(3).pad(20);
+        mainTable.row();
 
-    Label.LabelStyle themeLabelStyle = new Label.LabelStyle();
-    themeLabelStyle.font = font;
-    themeLabelStyle.fontColor = Color.WHITE;
+        // set up theme buttons and labels
+        themeButtons = new ImageButton[3];
+        themeLabels = new Label[3];
+        String[] themeNames = {"Classic", "Beach", "Halloween"};
 
-    Label titleLabel = new Label("Choose theme and then press Start Game", titleLabelStyle);
-    mainTable.add(titleLabel).colspan(3).pad(20);
-    mainTable.row();
+        for (int i = 0; i < 3; i++) {
+            final int index = i;
+            String imagePath = "theme" + (i + 1) + ".jpg";
+            Texture themeTexture = new Texture(Gdx.files.internal(imagePath));
+            ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+            style.up = new TextureRegionDrawable(new TextureRegion(themeTexture));
+            style.checked = new TextureRegionDrawable(new TextureRegion(themeTexture));
+            ImageButton themeButton = new ImageButton(style);
+            themeButtons[i] = themeButton;
 
-    themeButtons = new ImageButton[3];
-    themeLabels = new Label[3];
-    String[] themeNames = {"Classic", "Beach", "Halloween"};
+            themeButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    selectTheme(index);
+                }
+            });
 
-    for (int i = 0; i < 3; i++) {
-        final int index = i;
-        String imagePath = "theme" + (i + 1) + ".jpg";
-        Texture themeTexture = new Texture(Gdx.files.internal(imagePath));
-        ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
-        style.up = new TextureRegionDrawable(new TextureRegion(themeTexture));
-        style.checked = new TextureRegionDrawable(new TextureRegion(themeTexture));
-        ImageButton themeButton = new ImageButton(style);
-        themeButtons[i] = themeButton;
+            Table buttonTable = new Table();
+            buttonTable.add(themeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.25f, mainTable));
+            buttonTable.row();
 
-        themeButton.addListener(new ClickListener() {
+            Label themeLabel = new Label(themeNames[i], themeLabelStyle);
+            themeLabels[i] = themeLabel;
+            buttonTable.add(themeLabel).padTop(10);
+
+            mainTable.add(buttonTable).pad(10);
+        }
+
+        mainTable.row().padTop(20);
+
+        // create button table
+        Table buttonTable = new Table();
+        mainTable.add(buttonTable).colspan(3).center().padTop(20);
+
+        // add start game button
+        TextButton startButton = new TextButton("Start Game", skin);
+        buttonTable.add(startButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(100);
+
+        startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                selectTheme(index);
+                if (selectedTheme != -1) {
+                    String levelfile= "level1"+(selectedTheme+1)+".tmx";
+                    game.setScreen(new GameScreen(game,levelfile));
+                }
             }
         });
 
-        Table buttonTable = new Table();
-        buttonTable.add(themeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.25f, mainTable));
-        buttonTable.row();
+        // add main menu button
+        TextButton homeButton = new TextButton("Main Menu", skin);
+        buttonTable.add(homeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100);
 
-        Label themeLabel = new Label(themeNames[i], themeLabelStyle);
-        themeLabels[i] = themeLabel;
-        buttonTable.add(themeLabel).padTop(10);
+        homeButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new MainMenu(game)); // return to main menu
+            }
+        });
 
-        mainTable.add(buttonTable).pad(10);
+        mainTable.row().padTop(20);
     }
 
-    mainTable.row().padTop(20);
-
-    Table buttonTable = new Table();
-    mainTable.add(buttonTable).colspan(3).center().padTop(20);
-
-    TextButton startButton = new TextButton("Start Game", skin);
-    buttonTable.add(startButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(100);
-
-    startButton.addListener(new ClickListener() {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            if (selectedTheme != -1) {
-                String levelfile= "level1"+(selectedTheme+1)+".tmx";
-                //String levelfile="level21.tmx";
-                game.setScreen(new GameScreen(game,levelfile));
-            }
-        }
-    });
-
-
-    TextButton homeButton = new TextButton("Main Menu", skin);
-    buttonTable.add(homeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100);
-
-    homeButton.addListener(new ClickListener() {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            game.setScreen(new MainMenu(game)); // Return to main menu
-        }
-    });
-
-    mainTable.row().padTop(20);
-}
+    // method to handle theme selection
     private void selectTheme(int index) {
         selectedTheme = index;
         for (int i = 0; i < themeButtons.length; i++) {
@@ -148,22 +150,25 @@ public void show() {
         }
     }
 
-
     @Override
     public void render(float delta) {
+        // clear the screen
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 
+        // draw background
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.batch.end();
 
+        // update and draw stage (ui)
         stage.act();
         stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
+        // update proj matrix and viewport
         game.batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         stage.getViewport().update(width, height, true);
     }

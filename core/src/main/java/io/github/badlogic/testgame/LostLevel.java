@@ -21,93 +21,79 @@ public class LostLevel implements Screen {
     private Texture backgroundTexture;
     private Stage stage;
     private Skin skin;
-    //private final String playerName;
     private ImageButton[] themeButtons;
     private int selectedTheme = -1;
     private Label[] themeLabels;
 
     public LostLevel(Core game) {
         this.game = game;
-        //this.playerName = playerName;
     }
-
-    private BitmapFont generateFont(int baseFontSize) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("ARIAL.TTF"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = baseFontSize; // Set base font size dynamically
-        BitmapFont font = generator.generateFont(parameter);
-        generator.dispose();
-        return font;
-    }
-
 
     @Override
     public void show() {
-        backgroundTexture = new Texture(Gdx.files.internal("levellost.png")); // Load background image
+        // load background image
+        backgroundTexture = new Texture(Gdx.files.internal("levellost.png"));
 
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin=game.skin;
 
-        // Generate a font based on screen size
-        int fontSize = Math.max(20, Gdx.graphics.getWidth() / 40); // Adjust font size based on screen width
-        BitmapFont font = generateFont(fontSize);
+        // font based on screen size
+        int fontSize = Math.max(20, Gdx.graphics.getWidth() / 40);
+        BitmapFont font = game.generateFont(fontSize);
 
-        // Apply the font to the skin
-        skin.getFont("default-font").getData().setScale(fontSize / 20.0f); // Adjust font scale
+        // apply font to skin
+        skin.getFont("default-font").getData().setScale(fontSize / 20.0f);
         skin.add("custom-font", font, BitmapFont.class);
 
+        // set up stage and input processor
         stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
 
+        // create main table
         Table mainTable = new Table();
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
-//    Label.LabelStyle labelStyle = new Label.LabelStyle();
-//    labelStyle.font = font;
-        //labelStyle.fontColor = Color.BLACK;
-
-        // Set up label style for the title
+        // set up label styles
         Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
         titleLabelStyle.font = font;
-        titleLabelStyle.fontColor = Color.BLUE; // Set font color of title label to blue
+        titleLabelStyle.fontColor = Color.BLUE;
 
-        // Set up label style for theme names (keeping them white)
         Label.LabelStyle themeLabelStyle = new Label.LabelStyle();
         themeLabelStyle.font = font;
-        themeLabelStyle.fontColor = Color.WHITE; // Keep theme names white
+        themeLabelStyle.fontColor = Color.WHITE;
 
-
-        // Add a new row for buttons and proper alignment
+        // create button table
         Table buttonTable = new Table();
         mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
-
+        // add restart level button
         TextButton musicButton = new TextButton("Restart Level", skin);
         buttonTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(20);
 
         musicButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //switch off music
+                // will code later
             }
         });
 
         mainTable.row().padTop(20);
 
-
+        // add main menu button
         TextButton resumeButton = new TextButton("Main Menu", skin);
         mainTable.add(resumeButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(60);
 
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenu(game)); // Return to main menu
+                game.setScreen(new MainMenu(game)); // returns to main menu
             }
         });
 
-
-        mainTable.row().padTop(20); // Add space before any future content (if needed)
+        mainTable.row().padTop(20);
     }
+
+    // to handle theme selection
     private void selectTheme(int index) {
         selectedTheme = index;
         for (int i = 0; i < themeButtons.length; i++) {
@@ -120,25 +106,25 @@ public class LostLevel implements Screen {
         }
     }
 
-
     @Override
     public void render(float delta) {
-        // Clear the screen
+        // clear the screen
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 
-        // Draw the background
+        // draw the background
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.batch.end();
 
-        // Update and draw the stage (UI)
+        // update and draw the stage (ui)
         stage.act();
         stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
+        // update projec matrix and viewport
         game.batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         stage.getViewport().update(width, height, true);
     }
@@ -157,6 +143,7 @@ public class LostLevel implements Screen {
 
     @Override
     public void dispose() {
+        // dispose of resources
         game.batch.dispose();
         backgroundTexture.dispose();
         stage.dispose();

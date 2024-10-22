@@ -26,77 +26,58 @@ public class PauseScreen implements Screen {
 
     public PauseScreen(Core game, GameScreen gameScreen) {
         this.game = game;
-        this.gameScreen = gameScreen;  // Assign the current game screen
+        this.gameScreen = gameScreen;  // assign the current game screen
     }
-
-    private BitmapFont generateFont(int baseFontSize) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("ARIAL.TTF"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = baseFontSize; // Set base font size dynamically
-        BitmapFont font = generator.generateFont(parameter);
-        generator.dispose();
-        return font;
-    }
-
 
     @Override
     public void show() {
-        backgroundTexture = new Texture(Gdx.files.internal("paused2.png")); // Load background image
+        // load background image
+        backgroundTexture = new Texture(Gdx.files.internal("paused2.png"));
 
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin=game.skin;
 
-        // Generate a font based on screen size
-        int fontSize = Math.max(20, Gdx.graphics.getWidth() / 40); // Adjust font size based on screen width
-        BitmapFont font = generateFont(fontSize);
+        // font based on screen size
+        int fontSize = Math.max(20, Gdx.graphics.getWidth() / 40);
+        BitmapFont font = game.generateFont(fontSize);
 
-        // Apply the font to the skin
-        skin.getFont("default-font").getData().setScale(fontSize / 20.0f); // Adjust font scale
+        // apply font to skin
+        skin.getFont("default-font").getData().setScale(fontSize / 20.0f);
         skin.add("custom-font", font, BitmapFont.class);
 
+        // set up stage and input processor
         stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
 
+        // create main table
         Table mainTable = new Table();
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
-
-        // Set up label style for the title
+        // set up label styles
         Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
         titleLabelStyle.font = font;
-        titleLabelStyle.fontColor = Color.BLUE; // Set font color of title label to blue
+        titleLabelStyle.fontColor = Color.BLUE;
 
-        // Set up label style for theme names (keeping them white)
         Label.LabelStyle themeLabelStyle = new Label.LabelStyle();
         themeLabelStyle.font = font;
-        themeLabelStyle.fontColor = Color.WHITE; // Keep theme names white
+        themeLabelStyle.fontColor = Color.WHITE;
 
-
-        // Add a new row for buttons and proper alignment
+        // create button table
         Table buttonTable = new Table();
         mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
+        // add restart game button
         TextButton restartButton = new TextButton("Restart Game", skin);
         buttonTable.add(restartButton).colspan(3).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padRight(50);
 
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //game.setScreen(new GameScreen(game, ")); // Replace with your actual level file name
                 resumeGame();
             }
         });
 
-
-//        musicButton = new TextButton("Music Off", skin);
-       // buttonTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(50);
-
-//        musicButton.addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                //switch off music
-//            }
-//        });
+        // add music toggle button
         musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", skin);
         buttonTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(50);
 
@@ -110,20 +91,20 @@ public class PauseScreen implements Screen {
             }
         });
 
-        // Home button
+        // add main menu button
         TextButton homeButton = new TextButton("Main Menu", skin);
         buttonTable.add(homeButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(50);
 
         homeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenu(game)); // Return to main menu
+                game.setScreen(new MainMenu(game)); // return to main menu
             }
         });
 
         mainTable.row().padTop(20);
 
-        // resume button
+        // add resume button
         TextButton resumeButton = new TextButton("Resume", skin);
         mainTable.add(resumeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100).padTop(50);
 
@@ -134,34 +115,34 @@ public class PauseScreen implements Screen {
             }
         });
 
-
-        mainTable.row().padTop(20); // Add space before any future content (if needed)
-        Gdx.input.setInputProcessor(stage);
+        mainTable.row().padTop(20);
     }
 
+    // method to resume game
     private void resumeGame() {
-        gameScreen.setInputProcessor(); // Reset the input processor for the game screen
+        gameScreen.setInputProcessor(); // reset input processor for game screen
         game.setScreen(gameScreen);
     }
 
     @Override
     public void render(float delta) {
-        // Clear the screen
+        // clear screen
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 
-        // Draw the background
+        // draw background
         game.batch.begin();
         game.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.batch.end();
 
-        // Update and draw the stage (UI)
+        // update and draw stage (ui)
         stage.act();
         stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
+        // update proj matrix and viewport
         game.batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         stage.getViewport().update(width, height, true);
     }
@@ -180,6 +161,7 @@ public class PauseScreen implements Screen {
 
     @Override
     public void dispose() {
+        // dispose of resources
         game.batch.dispose();
         backgroundTexture.dispose();
         stage.dispose();

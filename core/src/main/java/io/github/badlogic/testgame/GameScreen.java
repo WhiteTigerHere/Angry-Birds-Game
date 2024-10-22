@@ -28,35 +28,41 @@ public class GameScreen implements Screen {
 
     private Stage stage;
     private Label scoreLabel;
-    private int score = 0; // Keeps track of the player's score
+    private int score = 0; // keeps track of the player's score
 
     public GameScreen(Core game, String levelFileName) {
         this.game = game;
 
+        // load and set up the tiled map
         TmxMapLoader mapLoader = new TmxMapLoader();
         map = mapLoader.load(levelFileName);
         mapRenderer = new OrthogonalTiledMapRenderer(map);
 
+        // calculate map dimensions
         float mapWidth = map.getProperties().get("width", Integer.class) * 32;
         float mapHeight = map.getProperties().get("height", Integer.class) * 32;
 
+        // set up camera and viewport
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(mapWidth, mapHeight, gameCam);
 
         gameCam.position.set(mapWidth / 2, mapHeight / 2, 0);
 
+        // set up stage for ui elements
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         setupUI();
         Gdx.input.setInputProcessor(stage);
     }
+
     public void setInputProcessor() {
         Gdx.input.setInputProcessor(stage);
     }
 
     private void setupUI() {
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+        Skin skin=game.skin;
 
+        // create pause button
         Texture pauseTexture = new Texture(Gdx.files.internal("pausebutton.png"));
         ImageButton pauseButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(pauseTexture)));
 
@@ -67,10 +73,12 @@ public class GameScreen implements Screen {
             }
         });
 
+        // set up score label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = skin.getFont("default-font");
         scoreLabel = new Label("Score: " + score, labelStyle);
 
+        // set up table for ui layout
         Table table = new Table();
         table.top().left();
         table.setFillParent(true);
@@ -90,47 +98,43 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // Update the camera and render the map
+        // update the camera and render the map
         gameCam.update();
         mapRenderer.setView(gameCam);
 
-        // Clear the screen
-        Gdx.gl.glClearColor(0, 0, 0, 1); // Set the background to black
+        // clear the screen
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 
-        // Render the map
+        // render the map
         mapRenderer.render();
 
-        // Draw the stage (UI)
+        // draw the stage (ui)
         stage.act();
         stage.draw();
-        //score will be incresed here
-        //scoreLabel.setText("Score: " + (int) score);
     }
 
     @Override
     public void resize(int width, int height) {
         gamePort.update(width, height);
-        stage.getViewport().update(width, height, true); // Ensure the UI resizes properly
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
+        // dispose of resources
         mapRenderer.dispose();
         map.dispose();
         stage.dispose();
