@@ -81,7 +81,8 @@ public class PauseScreen implements Screen {
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game, "level12.tmx")); // Replace with your actual level file name
+                //game.setScreen(new GameScreen(game, ")); // Replace with your actual level file name
+                resumeGame();
             }
         });
 
