@@ -37,8 +37,8 @@ This project is built using LibGDX as the main framework, and it demonstrates UI
 
 ### 1. **Game Logo Screen**
 - The first screen displayed, showing the game logo. It transitions to the main menu when press play button.
+![Game Logo](assets/firstscreen.png)
 
-![Main Menu](assets/firstscreen.png)
 
 ### 2. **Main Menu Screen**
 - **Enter Player Name Field**: Allows the player to input their name.
@@ -174,5 +174,6 @@ This will open the game in a desktop window with the static UI.
 - **Angry Birds Wiki**: https://angrybirds.fandom.com/ for references on game mechanics.
 
 
-
 ---
+
+
