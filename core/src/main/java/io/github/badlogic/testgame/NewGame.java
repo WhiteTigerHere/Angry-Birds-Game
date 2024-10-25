@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -118,7 +120,10 @@ public class NewGame implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if (selectedTheme != -1) {
                     String levelfile= "level1"+(selectedTheme+1)+".tmx";
+
+                    //String levelfile="level11.tmx";
                     game.setScreen(new GameScreen(game,levelfile));
+
                 }
             }
         });

@@ -1,8 +1,16 @@
 package io.github.badlogic.testgame;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -18,6 +26,9 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.physics.box2d.*;
+
+import java.util.ArrayList;
 
 public class GameScreen implements Screen {
     private final Core game;
@@ -25,34 +36,57 @@ public class GameScreen implements Screen {
     private Viewport gamePort;
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
-
+    private World world;
+    private Box2DDebugRenderer b2rend;
+    private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+    private Level level;
     private Stage stage;
     private Label scoreLabel;
     private int score = 0; // keeps track of the player's score
+    public static final float PPM = 100;
 
     public GameScreen(Core game, String levelFileName) {
         this.game = game;
 
-        // load and set up the tiled map
+        // Load the map first
         TmxMapLoader mapLoader = new TmxMapLoader();
         map = mapLoader.load(levelFileName);
-        mapRenderer = new OrthogonalTiledMapRenderer(map);
 
-        // calculate map dimensions
-        float mapWidth = map.getProperties().get("width", Integer.class) * 32;
-        float mapHeight = map.getProperties().get("height", Integer.class) * 32;
+        // Get map properties
+        int mapWidth = map.getProperties().get("width", Integer.class);
+        int mapHeight = map.getProperties().get("height", Integer.class);
+        int tileWidth = map.getProperties().get("tilewidth", Integer.class);
+        int tileHeight = map.getProperties().get("tileheight", Integer.class);
 
-        // set up camera and viewport
+        // Calculate world dimensions in meters
+        float worldWidth = mapWidth * tileWidth / PPM;
+        float worldHeight = mapHeight * tileHeight / PPM;
+
+        // Set up camera and viewport
         gameCam = new OrthographicCamera();
-        gamePort = new FitViewport(mapWidth, mapHeight, gameCam);
+        gamePort = new FitViewport(worldWidth, worldHeight, gameCam);
+        gameCam.position.set(worldWidth / 2, worldHeight / 2, 0);
+        gameCam.update();
 
-        gameCam.position.set(mapWidth / 2, mapHeight / 2, 0);
+        // Create Box2D world
+        world = new World(new Vector2(0, 0), true);
+        Gdx.app.log("GameScreen", "Gravity: " + world.getGravity());
+        b2rend = new Box2DDebugRenderer();
+
+        // Create level
+        level = Level.createLevel(levelFileName, world);
+        gameObjects = level.getGameObjects();
+
+        // Set up map renderer
+        mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / PPM);
 
         // set up stage for ui elements
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         setupUI();
         Gdx.input.setInputProcessor(stage);
+
+        Gdx.app.log("GameScreen", "Level created, map: " + (level.getMap() != null ? "loaded" : "null"));
     }
 
     public void setInputProcessor() {
@@ -91,6 +125,7 @@ public class GameScreen implements Screen {
         stage.addActor(table);
     }
 
+
     @Override
     public void show() {
         setInputProcessor();
@@ -98,21 +133,54 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // update the camera and render the map
+        Gdx.gl.glClearColor(0,0,0,1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         gameCam.update();
+
         mapRenderer.setView(gameCam);
-
-        // clear the screen
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
-
-        // render the map
         mapRenderer.render();
 
-        // draw the stage (ui)
-        stage.act();
+        game.batch.setProjectionMatrix(gameCam.combined);
+        game.batch.begin();
+        for (GameObject gameObject : gameObjects) {
+            gameObject.update(game.batch);
+        }
+        game.batch.end();
+
+         world.step(1/60f, 6, 2);
+         b2rend.render(world, gameCam.combined);
+
+        stage.act(delta);
         stage.draw();
     }
+
+//    @Override
+//    public void render(float delta) {
+//        //gameCam.update();
+//
+//        Gdx.gl.glClearColor(0,0,0,1);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//
+//        // render the map
+//        mapRenderer.setView(gameCam);
+//        mapRenderer.render();
+//
+//        // tell the spritebatch to do the draw
+//        game.batch.setProjectionMatrix(gameCam.combined);
+//
+//        game.batch.begin();
+//        for (GameObject gameObject : gameObjects) {
+//            gameObject.update(game.batch);
+//        }
+//        game.batch.end();
+//
+//        b2rend.render(world, gameCam.combined);
+//
+//        // update and draw stage (UI)
+//        stage.act(delta);
+//        stage.draw();
+//    }
 
     @Override
     public void resize(int width, int height) {
@@ -138,5 +206,11 @@ public class GameScreen implements Screen {
         mapRenderer.dispose();
         map.dispose();
         stage.dispose();
+        b2rend.dispose();
+        for (GameObject gameObject : gameObjects) {
+            gameObject.getTexture().dispose();
+        }
     }
+
+
 }
