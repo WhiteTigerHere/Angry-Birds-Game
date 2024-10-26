@@ -36,6 +36,9 @@ public class Core extends Game {
         skin = new Skin(files.internal("uiskin.json"));
 
         setScreen(new FirstScreen(this));
+        //setScreen(new GameScreen(this,"level11.tmx"));
+        //setScreen(new GameScreen(this,"level12.tmx"));
+        //setScreen(new GameScreen(this,"level13.tmx"));
         MusicManager.getInstance().playMusic();
         //setScreen(new PauseScreen(this));
         //setScreen(new CompletedGame(this));

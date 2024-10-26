@@ -44,7 +44,7 @@ public class Level {
         Gdx.app.log("Level", "Creating level with fileName: " + levelFileName);
         Level level;
 
-        switch (levelFileName.charAt(levelFileName.length() - 5)) {
+        switch (levelFileName.charAt(levelFileName.length() - 6)) {
             case '1':
                 level = new Level1(levelFileName);
                 break;

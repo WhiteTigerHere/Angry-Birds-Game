@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public class Pig extends GameObject {
     public Pig(World world, float x, float y, float width, float height) {
-        super(world, "pig.jpg");
+        super(world, "classicpig.png");
         setSize(width, height);
         setInitialPosition(x, y);
     }

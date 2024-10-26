@@ -12,11 +12,11 @@ public class Level3 extends Level {
         gameObjects.add(pig);
 
         // Create a bird at a different position with a different size
-        Bird bird = new Bird(world, 20, 20, 3, 3);
+        Bird bird = new Bird(world, 20, 20, 3, 3,1);
         gameObjects.add(bird);
 
         // Create a block at a different position with a different size and rotation
-        Block block = new Block(world, 50, 70, 15, 15, 30);
+        Block block = new Block(world, 50, 70, 15, 15, 30,1);
         gameObjects.add(block);
     }
 }

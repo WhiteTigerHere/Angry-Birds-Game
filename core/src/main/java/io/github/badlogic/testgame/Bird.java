@@ -3,10 +3,19 @@ package io.github.badlogic.testgame;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class Bird extends GameObject {
-    public Bird(World world, float x, float y, float width, float height) {
-        super(world, "bird.jpeg");
+    public Bird(World world, float x, float y, float width, float height, int choice) {
+        super(world, getTexturePath(choice));
         setSize(width, height);
         setInitialPosition(x, y);
+    }
+
+    private static String getTexturePath(int choice) {
+        switch (choice) {
+            case 1: return "redbird.png";
+            case 2: return "yellowbird.webp";
+            case 3: return "blackbird.png";
+            default: return "redbird.png"; // default to red bird if choice is out of range
+        }
     }
 
     @Override
