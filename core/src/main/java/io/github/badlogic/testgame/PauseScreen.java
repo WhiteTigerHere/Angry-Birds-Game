@@ -92,7 +92,7 @@ public class PauseScreen implements Screen {
 
         // add main menu button
         TextButton homeButton = new TextButton("Main Menu", skin);
-        buttonTable.add(homeButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(50);
+        buttonTable.add(homeButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(60);
 
         homeButton.addListener(new ClickListener() {
             @Override
@@ -101,16 +101,28 @@ public class PauseScreen implements Screen {
             }
         });
 
-        mainTable.row().padTop(20);
+        mainTable.row().padTop(40);
 
         // add resume button
         TextButton resumeButton = new TextButton("Resume", skin);
-        mainTable.add(resumeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100).padTop(50);
+        mainTable.add(resumeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padTop(90);
 
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 resumeGame();
+            }
+        });
+
+        // add save game button
+        TextButton saveGameButton = new TextButton("Save Game", skin);
+        mainTable.add(saveGameButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(50).padTop(90);
+
+        saveGameButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                resumeGame();
+                //serialization
             }
         });
 
