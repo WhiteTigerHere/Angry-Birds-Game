@@ -1,6 +1,7 @@
 package io.github.badlogic.testgame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -59,42 +60,33 @@ public class Level {
                 throw new IllegalArgumentException("Invalid level: " + levelFileName);
         }
 
-        // Move the ground creation code here
-        BodyDef bdef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fdef = new FixtureDef();
-        Body body;
-
-        //ground
-        for(MapObject object: level.map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject)object).getRectangle();
-
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set(rect.getX() + rect.getWidth()/2, rect.getY() + rect.getHeight()/2);
-            body = world.createBody(bdef);
-            shape.setAsBox(rect.getWidth()/2, rect.getHeight()/2);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
-
         level.create(world);
         return level;
     }
 
     protected void createGround(World world) {
-        BodyDef bdef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fdef = new FixtureDef();
+        MapLayer groundLayer = getMap().getLayers().get("ground");
 
-        bdef.type = BodyDef.BodyType.StaticBody;
-        bdef.position.set(getMap().getProperties().get("width", Integer.class) * 0.5f / PPM, 0.5f); // Center of the ground
+        for (MapObject object : groundLayer.getObjects()) {
+            if (object instanceof RectangleMapObject) {
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
-        Body body = world.createBody(bdef);
+                BodyDef bdef = new BodyDef();
+                bdef.type = BodyDef.BodyType.StaticBody;
+                bdef.position.set((rect.x + rect.width / 2) / PPM, (rect.y + rect.height / 2) / PPM);
 
-        shape.setAsBox(getMap().getProperties().get("width", Integer.class) * 0.5f / PPM, 0.5f); // Half width of the map, 0.5 meters high
-        fdef.shape = shape;
-        body.createFixture(fdef);
-        shape.dispose();
+                Body body = world.createBody(bdef);
+
+                PolygonShape shape = new PolygonShape();
+                shape.setAsBox(rect.width / 2 / PPM, rect.height / 2 / PPM);
+
+                FixtureDef fdef = new FixtureDef();
+                fdef.shape = shape;
+                body.createFixture(fdef);
+
+                shape.dispose();
+            }
+        }
     }
 
     public TiledMap getMap() {

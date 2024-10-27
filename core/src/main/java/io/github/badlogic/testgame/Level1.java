@@ -8,26 +8,11 @@ public class Level1 extends Level {
         super(mapFilename);
     }
 
-//    @Override
-//    public void create(World world) {
-//        float worldWidth = getMap().getProperties().get("width", Integer.class) * getMap().getProperties().get("tilewidth", Integer.class) / GameScreen.PPM;
-//        float worldHeight = getMap().getProperties().get("height", Integer.class) * getMap().getProperties().get("tileheight", Integer.class) / GameScreen.PPM;
-//
-//        float objectY = worldHeight / 2;  // Place objects at the middle height of the world
-//
-//        gameObjects.add(new Pig(world, worldWidth / 2, objectY, 1f, 1f));
-//        gameObjects.add(new Bird(world, worldWidth / 3, objectY, 1f, 1f,1));
-//        gameObjects.add(new Bird(world, worldWidth / 3, objectY, 1f, 1f,1));
-//        gameObjects.add(new Bird(world, worldWidth / 3, objectY, 1f, 1f,1));
-//        gameObjects.add(new Block(world, 2 * worldWidth / 3, objectY, 1f, 1f, 0,1));
-//        gameObjects.add(new Block(world, 2 * worldWidth / 3, objectY, 1f, 1f, 0,1));
-//        gameObjects.add(new Block(world, 2 * worldWidth / 3, objectY, 1f, 1f, 0,2));
-//    }
-
     @Override
     public void create(World world) {
         // Set positions and dimensions based on the grid in the image
         // Birds
+        createGround(world);
         gameObjects.add(new Bird(world, 135.33f / GameScreen.PPM, 315.33f / GameScreen.PPM, 70 / GameScreen.PPM, 80 / GameScreen.PPM, 1));
         gameObjects.add(new Bird(world, 92.33f / GameScreen.PPM, 160.00f / GameScreen.PPM, 70 / GameScreen.PPM, 80 / GameScreen.PPM, 1));
         gameObjects.add(new Bird(world, 39.00f / GameScreen.PPM, 160.00f / GameScreen.PPM, 70 / GameScreen.PPM, 80 / GameScreen.PPM, 1));
