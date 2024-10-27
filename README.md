@@ -131,7 +131,7 @@ This project is built using LibGDX as the main framework, and it demonstrates UI
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/WhiteTigerHere/testgame.git
+   git clone https://github.com/WhiteTigerHere/Angry-Birds-Game.git
    cd foldername
    ```
 
