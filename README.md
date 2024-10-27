@@ -1,5 +1,13 @@
 # Angry Birds Game
 
+---
+Made by:
+
+Aarushi Verma, 2023013
+
+Jaitrika Reddy, 2023333
+
+---
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 ## Platforms
 
@@ -23,7 +31,10 @@ This project is built using LibGDX as the main framework, and it demonstrates UI
 - **New Game Screen**: Buttons to select a theme and start a new game. Also contains button to go to Main Menu.
 - **Saved Game Screen**: Load a saved game and choose the game theme. Also contains button to go to Main Menu. 
 - **Game Screen**: Visual representation of the game stage. 
-- **Levels**: Game levels are represented with .tmx files for dynamic loading of different level configurations. 
+- **Level**: Game levels utilise .tmx files and object classes for dynamic loading of different level configurations. We further have different level classes for each level.
+- **Bird**: This class contains the necessary attributes for bird object. We are implementing three types of birds- Red, Chuck, Bomb.
+- **Pig**: This class contains the necessary attributes for pig object. We are implementing different types of pigs.
+- **Blocks**: This class contains the necessary attributes for block structure object. We are implementing three types of block- wooden, ice, stone.
 - **Pause Menu Screen**: Pause the game, resume, restart, toggle music, or return to the main menu. 
 - **Level Win Screen**: Shows the player's score after winning a level. Buttons to go to Next level and return to main menu.
 - **Lost Level Screen**: Shows a screen when the player loses a level. Restart level and return to main menu buttons. 
@@ -62,8 +73,8 @@ This project is built using LibGDX as the main framework, and it demonstrates UI
     - `Main Menu`: Returns to the main menu.
 
 ### 5. **Level Selection**
-- Levels are loaded dynamically using `.tmx` files, representing different level layouts.
-- Each level has a unique combination of birds, structures, and pigs.
+- Levels are loaded dynamically using `.tmx` files and object classes, representing different level layouts.
+- Each level has a different class with unique combination of birds, structures, and pigs.
   ![Main Menu](assets/level1.png)
 
 ### 6. **Pause Screen**
