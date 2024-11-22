@@ -3,8 +3,8 @@ package io.github.badlogic.testgame;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Level3 extends Level {
-    public Level3(String mapFilename) {
-        super(mapFilename);
+    public Level3(String mapFilename, GameScreen gameScreen) {
+        super(mapFilename, gameScreen);
     }
     public void create(World world) {
         // Create a pig at a different position with a different size

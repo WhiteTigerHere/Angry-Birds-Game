@@ -64,12 +64,12 @@ public class GameScreen implements Screen {
         gameCam.update();
 
         // Create Box2D world
-        world = new World(new Vector2(0, 0), true);
+        world = new World(new Vector2(0, -9), true);
         Gdx.app.log("GameScreen", "Gravity: " + world.getGravity());
         b2rend = new Box2DDebugRenderer();
 
         // Create level
-        level = Level.createLevel(levelFileName, world);
+        level = Level.createLevel(levelFileName, world,this);
         gameObjects = level.getGameObjects();
 
         // Set up map renderer
@@ -120,62 +120,45 @@ public class GameScreen implements Screen {
         stage.addActor(table);
     }
 
-
     @Override
     public void show() {
         setInputProcessor();
     }
 
+    private void update(float delta) {
+        world.step(1/60f, 6, 2);
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof Slingshot) {
+                ((Slingshot) gameObject).update(delta);
+            }
+        }
+    }
+
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0,0,0,1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        gameCam.update();
+        update(delta);
 
         mapRenderer.setView(gameCam);
         mapRenderer.render();
 
         game.batch.setProjectionMatrix(gameCam.combined);
         game.batch.begin();
+
         for (GameObject gameObject : gameObjects) {
-            gameObject.update(game.batch);
+            gameObject.draw(game.batch);
         }
         game.batch.end();
 
-         world.step(1/60f, 6, 2);
-         b2rend.render(world, gameCam.combined);
+        b2rend.render(world, gameCam.combined);
 
         stage.act(delta);
         stage.draw();
     }
 
-//    @Override
-//    public void render(float delta) {
-//        //gameCam.update();
-//
-//        Gdx.gl.glClearColor(0,0,0,1);
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//
-//        // render the map
-//        mapRenderer.setView(gameCam);
-//        mapRenderer.render();
-//
-//        // tell the spritebatch to do the draw
-//        game.batch.setProjectionMatrix(gameCam.combined);
-//
-//        game.batch.begin();
-//        for (GameObject gameObject : gameObjects) {
-//            gameObject.update(game.batch);
-//        }
-//        game.batch.end();
-//
-//        b2rend.render(world, gameCam.combined);
-//
-//        // update and draw stage (UI)
-//        stage.act(delta);
-//        stage.draw();
-//    }
+
 
     @Override
     public void resize(int width, int height) {
@@ -205,6 +188,10 @@ public class GameScreen implements Screen {
         for (GameObject gameObject : gameObjects) {
             gameObject.getTexture().dispose();
         }
+    }
+
+    OrthographicCamera getCamera(){
+        return gameCam;
     }
 
 

@@ -17,8 +17,10 @@ public class Level {
 
     protected static TiledMap map;
     protected ArrayList<GameObject> gameObjects;
+    protected GameScreen gameScreen;
 
-    public Level(String mapFilename) {
+    public Level(String mapFilename,GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
 
         if (map == null) {
             try {
@@ -38,22 +40,21 @@ public class Level {
 
     public void create(World world) {
         //subclasses override this method
-
     }
 
-    public static Level createLevel(String levelFileName, World world) {
+    public static Level createLevel(String levelFileName, World world, GameScreen gameScreen) {
         Gdx.app.log("Level", "Creating level with fileName: " + levelFileName);
         Level level;
 
         switch (levelFileName.charAt(levelFileName.length() - 6)) {
             case '1':
-                level = new Level1(levelFileName);
+                level = new Level1(levelFileName, gameScreen);
                 break;
             case '2':
-                level = new Level2(levelFileName);
+                level = new Level2(levelFileName, gameScreen);
                 break;
             case '3':
-                level = new Level3(levelFileName);
+                level = new Level3(levelFileName, gameScreen);
                 break;
             default:
                 Gdx.app.error("Level", "Invalid level filename: " + levelFileName);
@@ -64,30 +65,65 @@ public class Level {
         return level;
     }
 
-    protected void createGround(World world) {
-        MapLayer groundLayer = getMap().getLayers().get("ground");
+//    protected void createGround(World world) {
+//        MapLayer groundLayer = getMap().getLayers().get("ground");
+//
+//        for (MapObject object : groundLayer.getObjects()) {
+//            if (object instanceof RectangleMapObject) {
+//                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+//
+//                BodyDef bdef = new BodyDef();
+//                bdef.type = BodyDef.BodyType.StaticBody;
+//                bdef.position.set((rect.x + rect.width / 2) / PPM, (rect.y + rect.height / 2) / PPM);
+//
+//                Body body = world.createBody(bdef);
+//
+//                PolygonShape shape = new PolygonShape();
+//                shape.setAsBox(rect.width / 2 / PPM, rect.height / 2 / PPM);
+//
+//                FixtureDef fdef = new FixtureDef();
+//                fdef.shape = shape;
+//                body.createFixture(fdef);
+//
+//                shape.dispose();
+//            }
+//        }
+//    }
+protected void createGround(World world) {
+    // Get the ground layer from the map
+    MapLayer groundLayer = getMap().getLayers().get("ground");
 
-        for (MapObject object : groundLayer.getObjects()) {
-            if (object instanceof RectangleMapObject) {
-                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+    for (MapObject object : groundLayer.getObjects()) {
+        if (object instanceof RectangleMapObject) {
+            // Get the rectangle from the map object
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
-                BodyDef bdef = new BodyDef();
-                bdef.type = BodyDef.BodyType.StaticBody;
-                bdef.position.set((rect.x + rect.width / 2) / PPM, (rect.y + rect.height / 2) / PPM);
+            // Define the body definition
+            BodyDef bdef = new BodyDef();
+            bdef.type = BodyDef.BodyType.StaticBody;
+            bdef.position.set((rect.x + rect.width / 2) / PPM, (rect.y + rect.height / 2) / PPM);
 
-                Body body = world.createBody(bdef);
+            // Create the static body in the world
+            Body body = world.createBody(bdef);
 
-                PolygonShape shape = new PolygonShape();
-                shape.setAsBox(rect.width / 2 / PPM, rect.height / 2 / PPM);
+            // Define the shape as a box
+            PolygonShape shape = new PolygonShape();
+            shape.setAsBox(rect.width / 2 / PPM, rect.height / 2 / PPM);
 
-                FixtureDef fdef = new FixtureDef();
-                fdef.shape = shape;
-                body.createFixture(fdef);
+            // Define the fixture with friction
+            FixtureDef fdef = new FixtureDef();
+            fdef.shape = shape;
+            fdef.friction = 0.8f; // Add friction (range: 0.0 to 1.0, higher = more friction)
 
-                shape.dispose();
-            }
+            // Create the fixture on the body
+            body.createFixture(fdef);
+
+            // Dispose of the shape to free resources
+            shape.dispose();
         }
     }
+}
+
 
     public TiledMap getMap() {
         return this.map;
