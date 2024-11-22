@@ -116,6 +116,7 @@ public class Bird extends GameObject {
         } finally {
             shape.dispose();
         }
+        body.setUserData(this);
 
         // Log: Body creation success
         System.out.println("Body created successfully for Bird at position: " + body.getPosition());

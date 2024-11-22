@@ -5,8 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -24,6 +23,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class GameScreen implements Screen {
     private final Core game;
@@ -65,6 +65,43 @@ public class GameScreen implements Screen {
 
         // Create Box2D world
         world = new World(new Vector2(0, -9), true);
+        // Setting Contact Listener
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                Fixture fixtureA = contact.getFixtureA();
+                Fixture fixtureB = contact.getFixtureB();
+
+                Object userDataA = fixtureA.getBody().getUserData();
+                Object userDataB = fixtureB.getBody().getUserData();
+
+                System.out.println("UserDataA: " + userDataA + " | UserDataB: " + userDataB);
+
+                Pig pig = null;
+
+                // Determine if it's pig and ground
+                if (userDataA instanceof Pig && "Ground".equals(userDataB)) {
+                    pig = (Pig) userDataA;
+                } else if (userDataB instanceof Pig && "Ground".equals(userDataA)) {
+                    pig = (Pig) userDataB;
+                }
+
+                // Call burst on pig if relevant
+                if (pig != null) {
+                    pig.burst();  // Trigger burst effect and subsequent removal
+                    System.out.println("Pig burst called: " + pig);
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {}
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {}
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {}
+        });
+
+
         Gdx.app.log("GameScreen", "Gravity: " + world.getGravity());
         b2rend = new Box2DDebugRenderer();
 
@@ -126,10 +163,24 @@ public class GameScreen implements Screen {
     }
 
     private void update(float delta) {
-        world.step(1/60f, 6, 2);
-        for (GameObject gameObject : gameObjects) {
-            if (gameObject instanceof Slingshot) {
-                ((Slingshot) gameObject).update(delta);
+        world.step(1 / 60f, 6, 2);
+
+        Iterator<GameObject> iterator = gameObjects.iterator();
+        while (iterator.hasNext()) {
+            GameObject obj = iterator.next();
+            if (obj instanceof Pig) {
+                Pig pig = (Pig) obj;
+                //System.out.println("Checking pig: " + pig + " markedForRemoval: " + pig.markedForRemoval);
+                if (pig.isMarkedForRemoval()) {
+                    world.destroyBody(pig.getBody());
+                    iterator.remove();
+                    System.out.println("Pig removed from the game.");
+                }
+            }
+
+            // Handle updates for other game objects, e.g., slingshot movements.
+            if (obj instanceof Slingshot) {
+                ((Slingshot) obj).update(delta);
             }
         }
     }

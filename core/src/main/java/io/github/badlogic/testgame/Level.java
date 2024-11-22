@@ -90,39 +90,34 @@ public class Level {
 //        }
 //    }
 protected void createGround(World world) {
-    // Get the ground layer from the map
     MapLayer groundLayer = getMap().getLayers().get("ground");
 
     for (MapObject object : groundLayer.getObjects()) {
         if (object instanceof RectangleMapObject) {
-            // Get the rectangle from the map object
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
-            // Define the body definition
             BodyDef bdef = new BodyDef();
             bdef.type = BodyDef.BodyType.StaticBody;
             bdef.position.set((rect.x + rect.width / 2) / PPM, (rect.y + rect.height / 2) / PPM);
 
-            // Create the static body in the world
             Body body = world.createBody(bdef);
 
-            // Define the shape as a box
             PolygonShape shape = new PolygonShape();
             shape.setAsBox(rect.width / 2 / PPM, rect.height / 2 / PPM);
 
-            // Define the fixture with friction
             FixtureDef fdef = new FixtureDef();
             fdef.shape = shape;
-            fdef.friction = 0.8f; // Add friction (range: 0.0 to 1.0, higher = more friction)
+            fdef.friction = 0.5f;
 
-            // Create the fixture on the body
             body.createFixture(fdef);
-
-            // Dispose of the shape to free resources
             shape.dispose();
+
+            // Set user data for contact differentiation
+            body.setUserData("Ground");
         }
     }
 }
+
 
 
     public TiledMap getMap() {

@@ -190,6 +190,7 @@ public class Block extends GameObject {
             1f, 1f,           // Scale factors (1 = no scaling)
             (float) Math.toDegrees(body.getAngle()) // Rotation angle in degrees
         );
+        body.setUserData(this);
 
         shapeRenderer.end();
 

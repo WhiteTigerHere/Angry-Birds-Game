@@ -32,9 +32,14 @@
 
 package io.github.badlogic.testgame;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Timer;
 
 public class Pig extends GameObject {
+    public boolean markedForRemoval=false;
     public Pig(World world, float x, float y, float width, float height) {
         super(world, "classicpig.png");
         setSize(width, height);
@@ -88,8 +93,85 @@ public class Pig extends GameObject {
         body.setLinearDamping(0.1f); // Light damping for smoother motion
         body.setAngularDamping(0.1f); // Allow slight spinning
 
+        // Associate this Pig object with the body
+        body.setUserData(this);
+
         System.out.println("Body created successfully for Pig at position: " + body.getPosition());
         return body;
     }
+
+    public void burst() {
+        System.out.println("Pig burst!");
+
+        // Create burst effect
+        createBurstEffect(body.getPosition().x, body.getPosition().y);
+
+        // Schedule removal after a delay
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                markedForRemoval = true;
+                System.out.println("Pig marked for removal after 0.5 seconds.");
+            }
+        }, 0.2f); // Delay: 0.2 seconds
+    }
+
+    public boolean isMarkedForRemoval() {
+        return markedForRemoval;
+    }
+
+    public void markForRemoval() {
+        this.markedForRemoval = true;
+    }
+
+    public Body getBody() {
+        return this.body;
+    }
+
+
+    //    private void createBurstEffect(float x, float y) {
+//        // Example: Show a single "burst" image
+//        Sprite burstSprite = new Sprite(new Texture("burst.png"));
+//        burstSprite.setSize(1, 1); // Adjust size as needed
+//        burstSprite.setPosition(x - 0.5f, y - 0.5f); // Center it
+//
+//        // Add the burst sprite to a temporary list for rendering
+//        burstEffects.add(burstSprite);
+//
+//        // Schedule removal after a short delay
+//        Timer.schedule(new Timer.Task() {
+//            @Override
+//            public void run() {
+//                burstEffects.remove(burstSprite);
+//            }
+//        }, 0.5f); // Show for 0.5 seconds
+//    }
+    private Sprite burstSprite = null;
+
+    private void createBurstEffect(float x, float y) {
+        if (burstSprite == null) {
+            burstSprite = new Sprite(new Texture("burst.png"));
+            burstSprite.setSize(1, 1); // Adjust size as needed
+        }
+        burstSprite.setPosition(x - 0.5f, y - 0.5f); // Center it
+
+        // Ensure rendering during the burst lifespan
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                burstSprite = null; // Clear the effect after displaying
+            }
+        }, 1f); // Effect lasts the same as removal delay
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+        super.draw(batch); // Draw pig if texture is available
+        if (burstSprite != null) {
+            burstSprite.draw(batch); // Draw burst effect
+        }
+    }
+
+
 }
 
