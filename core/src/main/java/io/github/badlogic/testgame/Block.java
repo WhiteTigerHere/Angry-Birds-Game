@@ -135,9 +135,9 @@ public class Block extends GameObject {
     private MaterialType materialType; // Store material type for the block
 
     public enum MaterialType {
-        WOOD(Color.BROWN, 1f, 0.5f, 0f),      // Default values for wood
+        WOOD(Color.BROWN, 1f, 0.9f, 0f),      // Default values for wood
         ICE(new Color(0.7f, 0.8f, 0.9f, 0.7f), 0.5f, 0.1f, 0f), // Transparent sky-blue
-        CEMENT(Color.GRAY, 2f, 0.7f, 0f);    // Gray color, higher density
+        CEMENT(Color.GRAY, 2f, 0.9f, 0f);    // Gray color, higher density
 
         public final Color color;
         public final float density;

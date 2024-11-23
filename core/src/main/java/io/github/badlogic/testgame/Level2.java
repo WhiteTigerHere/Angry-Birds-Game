@@ -14,15 +14,15 @@ public class Level2 extends Level {
         OrthographicCamera camera = gameScreen.getCamera();
 
         // Pig
-        gameObjects.add(new Pig(world, 720f / GameScreen.PPM, 240f / GameScreen.PPM, Pig.PigType.KING));
-        gameObjects.add(new Pig(world, 720f / GameScreen.PPM, 360f / GameScreen.PPM, Pig.PigType.CLASSIC));
+        gameObjects.add(new Pig(world, 720f / GameScreen.PPM, 272f / GameScreen.PPM, Pig.PigType.KING));
+        gameObjects.add(new Pig(world, 720f / GameScreen.PPM, 430f / GameScreen.PPM, Pig.PigType.CLASSIC));
         // Blocks
-        gameObjects.add(new Block(world, 638f / GameScreen.PPM, 135f / GameScreen.PPM, 30f / GameScreen.PPM, 60f / GameScreen.PPM, Block.MaterialType.WOOD));
-        gameObjects.add(new Block(world, 802f / GameScreen.PPM, 135f / GameScreen.PPM, 30f / GameScreen.PPM, 60f / GameScreen.PPM, Block.MaterialType.WOOD));
-        gameObjects.add(new Block(world, 720f / GameScreen.PPM, 175f / GameScreen.PPM, 220f / GameScreen.PPM, 20f / GameScreen.PPM, Block.MaterialType.ICE));
-        gameObjects.add(new Block(world, 638f / GameScreen.PPM, 260f / GameScreen.PPM, 30f / GameScreen.PPM, 150f / GameScreen.PPM, Block.MaterialType.WOOD));
-        gameObjects.add(new Block(world, 802f / GameScreen.PPM, 260f / GameScreen.PPM, 30f / GameScreen.PPM, 150f / GameScreen.PPM, Block.MaterialType.WOOD));
-        gameObjects.add(new Block(world, 720f / GameScreen.PPM, 345f / GameScreen.PPM, 220f / GameScreen.PPM, 20f / GameScreen.PPM, Block.MaterialType.ICE));
+        gameObjects.add(new Block(world, 638f / GameScreen.PPM, 165f / GameScreen.PPM, 30f / GameScreen.PPM, 60f / GameScreen.PPM, Block.MaterialType.WOOD));
+        gameObjects.add(new Block(world, 802f / GameScreen.PPM, 165f / GameScreen.PPM, 30f / GameScreen.PPM, 60f / GameScreen.PPM, Block.MaterialType.WOOD));
+        gameObjects.add(new Block(world, 720f / GameScreen.PPM, 206f / GameScreen.PPM, 220f / GameScreen.PPM, 20f / GameScreen.PPM, Block.MaterialType.ICE));
+        gameObjects.add(new Block(world, 638f / GameScreen.PPM, 292f / GameScreen.PPM, 30f / GameScreen.PPM, 150f / GameScreen.PPM, Block.MaterialType.WOOD));
+        gameObjects.add(new Block(world, 802f / GameScreen.PPM, 292f / GameScreen.PPM, 30f / GameScreen.PPM, 150f / GameScreen.PPM, Block.MaterialType.WOOD));
+        gameObjects.add(new Block(world, 720f / GameScreen.PPM, 378f / GameScreen.PPM, 220f / GameScreen.PPM, 20f / GameScreen.PPM, Block.MaterialType.ICE));
 
         Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera);
         gameObjects.add(slingshot);

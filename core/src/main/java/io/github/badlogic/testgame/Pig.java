@@ -65,7 +65,7 @@ public class Pig extends GameObject {
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
         fdef.density = 1f; // Adjust density
-        fdef.friction = 0.5f; // Moderate friction
+        fdef.friction = 0.9f; // Moderate friction
         fdef.restitution = 0.2f; // Some bounce
 
         body.createFixture(fdef);
