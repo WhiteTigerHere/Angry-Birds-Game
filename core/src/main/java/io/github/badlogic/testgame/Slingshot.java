@@ -85,30 +85,30 @@ public class Slingshot extends GameObject {
         return distance <= maxDragDistance;
     }
 
-public void update(float delta) {
-    if (Gdx.input.isTouched() && loadedBird != null) {
-        Vector3 touchPos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camera.unproject(touchPos3D);
-        Vector2 touchPos = new Vector2(touchPos3D.x, touchPos3D.y);
+    public void update(float delta) {
+        if (Gdx.input.isTouched() && loadedBird != null) {
+            Vector3 touchPos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(touchPos3D);
+            Vector2 touchPos = new Vector2(touchPos3D.x, touchPos3D.y);
 
-        if (!isDragging && isInsideSlingArea(touchPos)) {
-            isDragging = true;
-        }
-
-        if (isDragging) {
-            float distance = touchPos.dst(startPosition);
-            if (distance > maxDragDistance) {
-                Vector2 direction = touchPos.sub(startPosition).nor();
-                touchPos.set(startPosition.x + direction.x * maxDragDistance,
-                    startPosition.y + direction.y * maxDragDistance);
+            if (!isDragging && isInsideSlingArea(touchPos)) {
+                isDragging = true;
             }
-            loadedBird.setPosition(touchPos.x, touchPos.y);
+
+            if (isDragging) {
+                float distance = touchPos.dst(startPosition);
+                if (distance > maxDragDistance) {
+                    Vector2 direction = touchPos.sub(startPosition).nor();
+                    touchPos.set(startPosition.x + direction.x * maxDragDistance,
+                        startPosition.y + direction.y * maxDragDistance);
+                }
+                loadedBird.setPosition(touchPos.x, touchPos.y);
+            }
+        } else if (isDragging) {
+            if (loadedBird != null) {
+                launchBird();
+            }
+            isDragging = false;
         }
-    } else if (isDragging) {
-        if (loadedBird != null) {
-            launchBird();
-        }
-        isDragging = false;
     }
-}
 }

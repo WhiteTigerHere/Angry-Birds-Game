@@ -1,35 +1,3 @@
-//package io.github.badlogic.testgame;
-//
-//import com.badlogic.gdx.physics.box2d.*;
-//
-//public class Pig extends GameObject {
-//    public Pig(World world, float x, float y, float width, float height) {
-//        super(world, "classicpig.png");
-//        setSize(width, height);
-//        setInitialPosition(x, y);
-//    }
-//
-//    @Override
-//    protected Body createBody(World world) {
-//        BodyDef bdef = new BodyDef();
-//        bdef.position.set(getX() + getWidth()/2, getY() + getHeight()/2);
-//        bdef.type = BodyDef.BodyType.DynamicBody;
-//
-//        Body body = world.createBody(bdef);
-//
-//        CircleShape shape = new CircleShape();
-//        shape.setRadius(getWidth() / 2);
-//
-//        FixtureDef fdef = new FixtureDef();
-//        fdef.shape = shape;
-//       // fdef.density = 1f;  // Add some density
-//        body.createFixture(fdef);
-//        shape.dispose();
-//
-//        return body;
-//    }
-//}
-
 package io.github.badlogic.testgame;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -40,63 +8,70 @@ import com.badlogic.gdx.utils.Timer;
 
 public class Pig extends GameObject {
     public boolean markedForRemoval=false;
-    public Pig(World world, float x, float y, float width, float height) {
-        super(world, "classicpig.png");
-        setSize(width, height);
+    public enum PigType {
+        CLASSIC("classicpig.png", 0.8f, 0.8f), // Smaller circle
+        KING("king.png", 1f, 1f),          // Larger circle
+        CORPORAL("corporal.jpg", 0.9f, 0.9f);  // Medium circle
 
-        if (world == null) {
-            throw new IllegalArgumentException("World cannot be null.");
+        private final String texturePath;
+        private final float width;
+        private final float height;
+
+        PigType(String texturePath, float width, float height) {
+            this.texturePath = texturePath;
+            this.width = width;
+            this.height = height;
         }
 
+        public String getTexturePath() {
+            return texturePath;
+        }
+
+        public float getWidth() {
+            return width;
+        }
+
+        public float getHeight() {
+            return height;
+        }
+    }
+
+    private final PigType type;
+    public Pig(World world, float x, float y, PigType type) {
+        super(world, type.getTexturePath());
+        this.type = type;
+
+        setSize(type.getWidth(), type.getHeight());
+        setInitialPosition(x, y);
+
         System.out.println("Creating pig body at position (" + x + ", " + y + ")");
-        this.body = createBody(world, x, y, width, height);
+        this.body = createBody(world, x, y);
 
         if (this.body == null) {
             throw new IllegalStateException("Failed to create Body for pig.");
         }
-
-        setInitialPosition(x, y);
     }
 
-    @Override
-    protected Body createBody(World world) {
-        return null;
-    }
-
-    protected Body createBody(World world, float x, float y, float width, float height) {
+    private Body createBody(World world, float x, float y) {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.DynamicBody;
-        bdef.position.set(x, y);
-        bdef.fixedRotation = false; // Allow rotation for realistic reactions
+        bdef.position.set(x, y); // Use x, y passed as arguments
 
         Body body = world.createBody(bdef);
 
         CircleShape shape = new CircleShape();
-        shape.setRadius(getWidth() / 3);
+        shape.setRadius(getWidth() / 2); // Radius matches the width
 
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
-        fdef.density = 1f;  // Adjust density
-        fdef.friction = 0.5f; // Moderate friction to prevent sticking
-        fdef.restitution = 0.2f; // Some bounce for realism
+        fdef.density = 1f; // Adjust density
+        fdef.friction = 0.5f; // Moderate friction
+        fdef.restitution = 0.2f; // Some bounce
 
-        try {
-            body.createFixture(fdef);
-        } catch (Exception e) {
-            System.err.println("Error creating fixture: " + e.getMessage());
-            return null;
-        } finally {
-            shape.dispose();
-        }
+        body.createFixture(fdef);
+        shape.dispose();
 
-        // Optional: Lower damping for dynamic responses
-        body.setLinearDamping(0.1f); // Light damping for smoother motion
-        body.setAngularDamping(0.1f); // Allow slight spinning
-
-        // Associate this Pig object with the body
         body.setUserData(this);
-
-        System.out.println("Body created successfully for Pig at position: " + body.getPosition());
         return body;
     }
 
@@ -162,6 +137,11 @@ public class Pig extends GameObject {
                 burstSprite = null; // Clear the effect after displaying
             }
         }, 1f); // Effect lasts the same as removal delay
+    }
+
+    @Override
+    protected Body createBody(World world) {
+        return null;
     }
 
     @Override

@@ -130,23 +130,44 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class Block extends GameObject {
-    private ShapeRenderer shapeRenderer;
 
-    public Block(World world, float x, float y, float width, float height, float rotation, int choice) {
+    private ShapeRenderer shapeRenderer;
+    private MaterialType materialType; // Store material type for the block
+
+    public enum MaterialType {
+        WOOD(Color.BROWN, 1f, 0.5f, 0f),      // Default values for wood
+        ICE(new Color(0.7f, 0.8f, 0.9f, 0.7f), 0.5f, 0.1f, 0f), // Transparent sky-blue
+        CEMENT(Color.GRAY, 2f, 0.7f, 0f);    // Gray color, higher density
+
+        public final Color color;
+        public final float density;
+        public final float friction;
+        public final float restitution;
+
+        MaterialType(Color color, float density, float friction, float restitution) {
+            this.color = color;
+            this.density = density;
+            this.friction = friction;
+            this.restitution = restitution;
+        }
+    }
+
+    public Block(World world, float x, float y, float width, float height, MaterialType materialType) {
         super(world, null); // No texture, handled as a filled rectangle
         this.shapeRenderer = new ShapeRenderer();
+        this.materialType = materialType;
         setSize(width, height);
         setInitialPosition(x, y);
 
-        this.body = createBody(world, x, y, width, height);
+        this.body = createBody(world, x, y, width, height, materialType);
         if (this.body == null) {
             throw new IllegalStateException("Failed to create Body for Block.");
         }
     }
 
-    protected Body createBody(World world, float x, float y, float width, float height) {
+    protected Body createBody(World world, float x, float y, float width, float height, MaterialType materialType) {
         BodyDef bdef = new BodyDef();
-        bdef.type = BodyDef.BodyType.DynamicBody; // Keep blocks dynamic if they can move
+        bdef.type = BodyDef.BodyType.DynamicBody; // Blocks are dynamic by default
         bdef.position.set(x, y);
 
         Body body = world.createBody(bdef);
@@ -156,16 +177,15 @@ public class Block extends GameObject {
 
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
-        fdef.density = 1f; // Ensure realistic mass
-        fdef.friction = 0.5f; // Moderate friction
-        fdef.restitution = 0.1f; // Reduce bounce for stability
+        fdef.density = materialType.density;
+        fdef.friction = materialType.friction;
+        fdef.restitution = materialType.restitution;
 
         body.createFixture(fdef);
         shape.dispose();
 
         return body;
     }
-
 
     @Override
     public void draw(SpriteBatch batch) {
@@ -175,7 +195,7 @@ public class Block extends GameObject {
         // Use ShapeRenderer for the block
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.BROWN); // Block color
+        shapeRenderer.setColor(materialType.color); // Use material-specific color
 
         // Synchronize position and rotation with physics body
         float x = body.getPosition().x - getWidth() / 2;
@@ -208,3 +228,4 @@ public class Block extends GameObject {
         return null;
     }
 }
+

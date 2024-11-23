@@ -78,7 +78,7 @@ public class Bird extends GameObject {
     private static String getTexturePath(int choice) {
         switch (choice) {
             case 1: return "redbird.png";
-            case 2: return "yellowbird.webp";
+            case 2: return "yellowbird.jpg";
             case 3: return "blackbird.png";
             default: return "redbird.png"; // default to red bird if choice is out of range
         }
@@ -140,4 +140,3 @@ public class Bird extends GameObject {
         return body.getPosition();
     }
 }
-
