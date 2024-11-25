@@ -115,7 +115,7 @@ public class NewGame implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if (selectedTheme != -1) {
                     //String levelfile= "level1"+(selectedTheme+1)+".tmx";
-                    String levelfile= "level3"+(selectedTheme+1)+".tmx";
+                    String levelfile= "level1"+(selectedTheme+1)+".tmx";
 
                     //String levelfile="level11.tmx";
                     game.setScreen(new GameScreen(game,levelfile));

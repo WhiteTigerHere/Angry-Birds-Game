@@ -105,7 +105,7 @@ public class PauseScreen implements Screen {
 
         // add resume button
         TextButton resumeButton = new TextButton("Resume", skin);
-        mainTable.add(resumeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padTop(90);
+        mainTable.add(resumeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padTop(50);
 
         resumeButton.addListener(new ClickListener() {
             @Override
@@ -116,7 +116,7 @@ public class PauseScreen implements Screen {
 
         // add save game button
         TextButton saveGameButton = new TextButton("Save Game", skin);
-        mainTable.add(saveGameButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(50).padTop(90);
+        mainTable.add(saveGameButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(50).padTop(50);
 
         saveGameButton.addListener(new ClickListener() {
             @Override

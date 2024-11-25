@@ -1,5 +1,6 @@
 package io.github.badlogic.testgame;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,19 +9,23 @@ import com.badlogic.gdx.utils.Timer;
 
 public class Pig extends GameObject {
     public boolean markedForRemoval=false;
+   // private final GameScreen game1;
+
     public enum PigType {
-        CLASSIC("classicpig.png", 0.8f, 0.8f), // Smaller circle
-        KING("king.png", 1f, 1f),          // Larger circle
-        CORPORAL("corporal.jpg", 0.9f, 0.9f);  // Medium circle
+        CLASSIC("classicpig.png", 0.8f, 0.8f,2000), // Smaller circle
+        KING("king.png", 1f, 1f,4000),          // Larger circle
+        CORPORAL("corporal.jpg", 0.9f, 0.9f,6000);  // Medium circle
 
         private final String texturePath;
         private final float width;
         private final float height;
+        private final int points;
 
-        PigType(String texturePath, float width, float height) {
+        PigType(String texturePath, float width, float height, int points) {
             this.texturePath = texturePath;
             this.width = width;
             this.height = height;
+            this.points = points;
         }
 
         public String getTexturePath() {
@@ -33,6 +38,10 @@ public class Pig extends GameObject {
 
         public float getHeight() {
             return height;
+        }
+
+        public int getPoints() {
+            return points;
         }
     }
 
@@ -50,6 +59,10 @@ public class Pig extends GameObject {
         if (this.body == null) {
             throw new IllegalStateException("Failed to create Body for pig.");
         }
+    }
+
+    public PigType getType() {
+        return type;
     }
 
     private Body createBody(World world, float x, float y) {
@@ -81,11 +94,16 @@ public class Pig extends GameObject {
         // Create burst effect
         createBurstEffect(body.getPosition().x, body.getPosition().y);
 
+        // Add score based on pig type using ScoreManager
+//        int points = type.getPoints();
+//        ScoreManager.getInstance().addScore(points); // Update score using the ScoreManager
+//
         // Schedule removal after a delay
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 markedForRemoval = true;
+
                 System.out.println("Pig marked for removal after 0.5 seconds.");
             }
         }, 0.2f); // Delay: 0.2 seconds

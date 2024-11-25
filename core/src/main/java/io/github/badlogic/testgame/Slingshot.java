@@ -2,6 +2,8 @@ package io.github.badlogic.testgame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -16,14 +18,66 @@ public class Slingshot extends GameObject {
     private final Vector2 startPosition;
     private final Camera camera;
     private final float maxDragDistance = 100 / GameScreen.PPM;
+    private ShapeRenderer shapeRenderer;
+    private World world;
+    private final float trajectoryTimeStep = 0.1f; // Step for calculating trajectory (in seconds)
+    private final int trajectoryPoints = 30; // Number of points to render
+    private static Slingshot instance;
 
     public Slingshot(World world, float x, float y, float width, float height, Camera camera) {
         super(world, "slingshot.png");
+        this.world = world;
         setSize(width, height);
         setInitialPosition(x, y);
         this.startPosition = new Vector2(x, y);
         this.camera = camera;
+        this.shapeRenderer = new ShapeRenderer();
     }
+
+    public static Slingshot getInstance(World world, float x, float y, float width, float height, Camera camera) {
+        if (instance == null) {
+            instance = new Slingshot(world, x, y, width, height, camera);
+        }
+        return instance;
+    }
+
+    private Vector2 calculateVelocity(Vector2 start, Vector2 end, float multiplier) {
+        return start.cpy().sub(end).scl(multiplier);
+    }
+
+    protected void renderString() {
+        if (loadedBird != null && isDragging) {
+            shapeRenderer.setProjectionMatrix(camera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(Color.BROWN); // Color of the string
+
+            // Draw the string between slingshot arms and the bird
+            shapeRenderer.line(startPosition.x, startPosition.y, loadedBird.getX(), loadedBird.getY());
+            shapeRenderer.end();
+        }
+    }
+
+    protected void renderTrajectory() {
+        if (loadedBird != null && isDragging) {
+            shapeRenderer.setProjectionMatrix(camera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(Color.WHITE);
+
+            // Simulate the trajectory
+            Vector2 velocity = calculateVelocity(startPosition, loadedBird.getPosition(), 5f);
+            Vector2 position = loadedBird.getPosition().cpy();
+            Vector2 gravity = world.getGravity().cpy().scl(1 / GameScreen.PPM);
+
+            for (int i = 0; i < 30; i++) { // Draw 30 points for the trajectory
+                position.add(velocity.cpy().scl(trajectoryTimeStep)); // Simulate one frame (1/60s)
+                velocity.add(gravity.cpy().scl(trajectoryTimeStep)); // Apply gravity
+                shapeRenderer.circle(position.x, position.y, 0.05f); // Draw a small circle at the position
+            }
+
+            shapeRenderer.end();
+        }
+    }
+
 
     @Override
     protected Body createBody(World world) {
@@ -111,4 +165,12 @@ public class Slingshot extends GameObject {
             isDragging = false;
         }
     }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        shapeRenderer.dispose(); // Dispose the ShapeRenderer
+    }
 }
+
+

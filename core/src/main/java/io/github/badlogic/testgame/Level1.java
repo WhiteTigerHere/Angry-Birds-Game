@@ -14,11 +14,15 @@ public class Level1 extends Level {
         createGround(world);
 
         OrthographicCamera camera = gameScreen.getCamera();
+
+        // Pig
         gameObjects.add(new Pig(world, 720f / GameScreen.PPM, 360f / GameScreen.PPM, Pig.PigType.CLASSIC));
+
         // Blocks
         gameObjects.add(new Block(world, 638f / GameScreen.PPM, 210f / GameScreen.PPM, 30f / GameScreen.PPM, 150f / GameScreen.PPM, Block.MaterialType.WOOD));
         gameObjects.add(new Block(world, 802f / GameScreen.PPM, 210f / GameScreen.PPM, 30f / GameScreen.PPM, 150f / GameScreen.PPM, Block.MaterialType.WOOD));
         gameObjects.add(new Block(world, 720f / GameScreen.PPM, 301f / GameScreen.PPM, 220f / GameScreen.PPM, 30f / GameScreen.PPM, Block.MaterialType.WOOD));
+
         Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera);
         gameObjects.add(slingshot);
 
@@ -27,8 +31,11 @@ public class Level1 extends Level {
         Bird bird3 = new Bird(world, 39.00f / GameScreen.PPM, 160.00f / GameScreen.PPM, 70 / GameScreen.PPM, 80 / GameScreen.PPM, 1);
 
         slingshot.loadBird(bird1);
+        gameScreen.birdcount--;
         slingshot.loadBird(bird2);
+        gameScreen.birdcount--;
         slingshot.loadBird(bird3);
+        gameScreen.birdcount--;
 
         gameObjects.add(bird1);
         gameObjects.add(bird2);

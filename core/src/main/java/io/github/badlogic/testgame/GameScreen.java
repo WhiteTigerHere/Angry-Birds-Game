@@ -1,6 +1,7 @@
 package io.github.badlogic.testgame;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -27,6 +29,7 @@ import java.util.Iterator;
 
 public class GameScreen implements Screen {
     private final Core game;
+    private String levelFileName;
     private OrthographicCamera gameCam;
     private Viewport gamePort;
     private TiledMap map;
@@ -39,9 +42,15 @@ public class GameScreen implements Screen {
     private Label scoreLabel;
     private int score = 0; // keeps track of the player's score
     public static final float PPM = 100;
+    public int birdcount=3;
+    //private OrthographicCamera camera;
+
 
     public GameScreen(Core game, String levelFileName) {
         this.game = game;
+        this.levelFileName = levelFileName;
+        //camera = this.getCamera();
+
 
         // Load the map first
         TmxMapLoader mapLoader = new TmxMapLoader();
@@ -160,10 +169,24 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         setInputProcessor();
+        score = ScoreManager.getInstance().getScore();
     }
 
     private void update(float delta) {
         world.step(1 / 60f, 6, 2);
+
+
+//        if(birdcount==0 && score<levelpointsrequired){
+//            Gdx.app.postRunnable(() -> {
+//                // Add a delay before switching screens
+//                Timer.schedule(new Timer.Task() {
+//                    @Override
+//                    public void run() {
+//                        game.setScreen(new LostLevel(game));  // Transition with updated score
+//                    }
+//                }, 2f);  // 2 seconds delay
+//            });
+//        }
 
         Iterator<GameObject> iterator = gameObjects.iterator();
         while (iterator.hasNext()) {
@@ -173,8 +196,48 @@ public class GameScreen implements Screen {
                 //System.out.println("Checking pig: " + pig + " markedForRemoval: " + pig.markedForRemoval);
                 if (pig.isMarkedForRemoval()) {
                     world.destroyBody(pig.getBody());
+                    int currscore=pig.getType().getPoints();
+                    score+=currscore;
+                    scoreLabel.setText("Score: " + score);
                     iterator.remove();
                     System.out.println("Pig removed from the game.");
+
+                    char levelno = levelFileName.charAt(5);
+                    int levelnum = Character.getNumericValue(levelno);
+                    int levelpointsrequired=0;
+                    if(levelnum==1){
+                        levelpointsrequired=2000;
+                    }
+                    else if(levelnum==2){
+                        levelpointsrequired=6000;
+                    }
+                    else if(levelnum==3){
+                        levelpointsrequired=12000;
+                    }
+
+                    // Check for Level Win condition
+                    if (score >= levelpointsrequired ) {
+                        // Transition to Level Win screen
+                        if(levelnum==1){
+                            score+=600;
+                        }
+                        else if(levelnum==2){
+                            score+=1600;
+                        }
+                        else if(levelnum==3){
+                            score+=4400;
+                        }
+                        // Use a postRunnable to delay the screen change
+                        Gdx.app.postRunnable(() -> {
+                            // Add a delay before switching screens
+                            Timer.schedule(new Timer.Task() {
+                                @Override
+                                public void run() {
+                                    game.setScreen(new LevelWin(game, "Red", score));  // Transition with updated score
+                                }
+                            }, 2f);  // 2 seconds delay
+                        });
+                    }
                 }
             }
 
@@ -192,6 +255,7 @@ public class GameScreen implements Screen {
 
         update(delta);
 
+
         mapRenderer.setView(gameCam);
         mapRenderer.render();
 
@@ -204,6 +268,10 @@ public class GameScreen implements Screen {
         game.batch.end();
 
         b2rend.render(world, gameCam.combined);
+
+        // Render slingshot string and trajectory
+        //Slingshot.getInstance(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera).renderString();
+        //Slingshot.getInstance(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera).renderTrajectory();
 
         stage.act(delta);
         stage.draw();
