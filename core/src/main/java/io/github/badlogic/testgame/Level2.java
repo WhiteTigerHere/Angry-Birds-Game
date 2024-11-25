@@ -24,7 +24,7 @@ public class Level2 extends Level {
         gameObjects.add(new Block(world, 802f / GameScreen.PPM, 292f / GameScreen.PPM, 30f / GameScreen.PPM, 150f / GameScreen.PPM, Block.MaterialType.WOOD));
         gameObjects.add(new Block(world, 720f / GameScreen.PPM, 378f / GameScreen.PPM, 220f / GameScreen.PPM, 20f / GameScreen.PPM, Block.MaterialType.ICE));
 
-        Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera);
+        Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera,gameScreen);
         gameObjects.add(slingshot);
 
         Bird bird1 = new Bird(world, 135.33f / GameScreen.PPM, 315.33f / GameScreen.PPM, 70 / GameScreen.PPM, 80 / GameScreen.PPM, 1);

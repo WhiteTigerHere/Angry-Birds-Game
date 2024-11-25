@@ -42,9 +42,20 @@ public class GameScreen implements Screen {
     private Label scoreLabel;
     private int score = 0; // keeps track of the player's score
     public static final float PPM = 100;
-    public int birdcount=3;
+    //public int birdcount=3;
     //private OrthographicCamera camera;
 
+    public String getLevelFileName() {
+        return levelFileName;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public Core getGame() {
+        return game;
+    }
 
     public GameScreen(Core game, String levelFileName) {
         this.game = game;
@@ -174,19 +185,6 @@ public class GameScreen implements Screen {
 
     private void update(float delta) {
         world.step(1 / 60f, 6, 2);
-
-
-//        if(birdcount==0 && score<levelpointsrequired){
-//            Gdx.app.postRunnable(() -> {
-//                // Add a delay before switching screens
-//                Timer.schedule(new Timer.Task() {
-//                    @Override
-//                    public void run() {
-//                        game.setScreen(new LostLevel(game));  // Transition with updated score
-//                    }
-//                }, 2f);  // 2 seconds delay
-//            });
-//        }
 
         Iterator<GameObject> iterator = gameObjects.iterator();
         while (iterator.hasNext()) {

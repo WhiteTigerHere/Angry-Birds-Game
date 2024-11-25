@@ -23,8 +23,9 @@ public class Slingshot extends GameObject {
     private final float trajectoryTimeStep = 0.1f; // Step for calculating trajectory (in seconds)
     private final int trajectoryPoints = 30; // Number of points to render
     private static Slingshot instance;
+    private GameScreen gameScreen;
 
-    public Slingshot(World world, float x, float y, float width, float height, Camera camera) {
+    public Slingshot(World world, float x, float y, float width, float height, Camera camera,GameScreen gameScreen) {
         super(world, "slingshot.png");
         this.world = world;
         setSize(width, height);
@@ -32,11 +33,12 @@ public class Slingshot extends GameObject {
         this.startPosition = new Vector2(x, y);
         this.camera = camera;
         this.shapeRenderer = new ShapeRenderer();
+        this.gameScreen = gameScreen;
     }
 
-    public static Slingshot getInstance(World world, float x, float y, float width, float height, Camera camera) {
+    public static Slingshot getInstance(World world, float x, float y, float width, float height, Camera camera, GameScreen gameScreen) {
         if (instance == null) {
-            instance = new Slingshot(world, x, y, width, height, camera);
+            instance = new Slingshot(world, x, y, width, height, camera,gameScreen);
         }
         return instance;
     }
@@ -129,8 +131,43 @@ public class Slingshot extends GameObject {
                     if (!birdQueue.isEmpty()) {
                         setLoadedBird(birdQueue.poll());
                     }
+                    else {
+                        // Check the score and required points if all birds are used
+                        checkGameOverCondition();
+                    }
                 }
             }, 1); // 1-second delay to avoid overlap
+        }
+    }
+
+    private void checkGameOverCondition() {
+        // Determine required points for the level
+        char levelNo = gameScreen.getLevelFileName().charAt(5);
+        int levelNum = Character.getNumericValue(levelNo);
+        int levelPointsRequired = 0;
+
+        switch (levelNum) {
+            case 1:
+                levelPointsRequired = 2000;
+                break;
+            case 2:
+                levelPointsRequired = 6000;
+                break;
+            case 3:
+                levelPointsRequired = 12000;
+                break;
+        }
+
+        // If score is less than required points, transition to LostLevel
+        if (gameScreen.getScore() < levelPointsRequired) {
+            Gdx.app.postRunnable(() -> {
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        gameScreen.getGame().setScreen(new LostLevel(gameScreen.getGame())); // Transition to LostLevel screen
+                    }
+                }, 2f); // 2-second delay
+            });
         }
     }
 
