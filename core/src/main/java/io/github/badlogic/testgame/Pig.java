@@ -12,20 +12,22 @@ public class Pig extends GameObject {
    // private final GameScreen game1;
 
     public enum PigType {
-        CLASSIC("classicpig.png", 0.8f, 0.8f,2000), // Smaller circle
-        KING("king.png", 1f, 1f,4000),          // Larger circle
-        CORPORAL("corporal.jpg", 0.9f, 0.9f,6000);  // Medium circle
+        CLASSIC("classicpig.png", 0.8f, 0.8f,2000,2000), // Smaller circle
+        KING("king.png", 1f, 1f,4000,4000),          // Larger circle
+        CORPORAL("corporal.jpg", 0.9f, 0.9f,6000,6000);  // Medium circle
 
         private final String texturePath;
         private final float width;
         private final float height;
         private final int points;
+        private final int health;
 
-        PigType(String texturePath, float width, float height, int points) {
+        PigType(String texturePath, float width, float height, int health,int points) {
             this.texturePath = texturePath;
             this.width = width;
             this.height = height;
             this.points = points;
+            this.health=health;
         }
 
         public String getTexturePath() {
@@ -43,12 +45,20 @@ public class Pig extends GameObject {
         public int getPoints() {
             return points;
         }
+
+        public int getHealth() {
+            return health;
+        }
     }
 
     private final PigType type;
+    private final int maxHealth;
+    private int health;
     public Pig(World world, float x, float y, PigType type) {
         super(world, type.getTexturePath());
         this.type = type;
+        this.maxHealth = type.getHealth();
+        this.health = maxHealth; // Set the initial health to the pig's point value
 
         setSize(type.getWidth(), type.getHeight());
         setInitialPosition(x, y);
@@ -60,6 +70,19 @@ public class Pig extends GameObject {
             throw new IllegalStateException("Failed to create Body for pig.");
         }
     }
+
+    public void takeDamage(int damage) {
+        health -= damage;
+        System.out.println("Pig took " + damage + " damage. Health is now: " + health);
+        if (health <= 0) {
+            burst();
+        }
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
 
     public PigType getType() {
         return type;

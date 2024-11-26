@@ -28,9 +28,9 @@ public class Level1 extends Level {
         Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera,gameScreen);
         gameObjects.add(slingshot);
 
-        Bird bird1 = new Bird(world, 135.33f / GameScreen.PPM, 315.33f / GameScreen.PPM, 70 / GameScreen.PPM, 80 / GameScreen.PPM, 1);
-        Bird bird2 = new Bird(world, 92.33f / GameScreen.PPM, 160.00f / GameScreen.PPM, 70 / GameScreen.PPM, 80 / GameScreen.PPM, 1);
-        Bird bird3 = new Bird(world, 39.00f / GameScreen.PPM, 160.00f / GameScreen.PPM, 70 / GameScreen.PPM, 80 / GameScreen.PPM, 1);
+        Bird bird1 = new Bird(world, 135.33f / GameScreen.PPM, 315.33f / GameScreen.PPM, Bird.BirdType.RED);
+        Bird bird2 = new Bird(world, 92.33f / GameScreen.PPM, 160.00f / GameScreen.PPM, Bird.BirdType.RED);
+        Bird bird3 = new Bird(world, 39.00f / GameScreen.PPM, 160.00f / GameScreen.PPM, Bird.BirdType.RED);
 
         slingshot.loadBird(bird1);
         slingshot.loadBird(bird2);

@@ -85,6 +85,7 @@ public class GameScreen implements Screen {
 
         // Create Box2D world
         world = new World(new Vector2(0, -9), true);
+        createWorldBounds();
         // Setting Contact Listener
         world.setContactListener(new ContactListener() {
             @Override
@@ -95,21 +96,42 @@ public class GameScreen implements Screen {
                 Object userDataA = fixtureA.getBody().getUserData();
                 Object userDataB = fixtureB.getBody().getUserData();
 
-                System.out.println("UserDataA: " + userDataA + " | UserDataB: " + userDataB);
-
                 Pig pig = null;
+                Bird bird = null;
+                boolean pigOnGround = false;
 
-                // Determine if it's pig and ground
-                if (userDataA instanceof Pig && "Ground".equals(userDataB)) {
+                // Determine collision types
+                if (userDataA instanceof Pig) {
                     pig = (Pig) userDataA;
-                } else if (userDataB instanceof Pig && "Ground".equals(userDataA)) {
+                    pigOnGround = "Ground".equals(userDataB);
+                } else if (userDataB instanceof Pig) {
                     pig = (Pig) userDataB;
+                    pigOnGround = "Ground".equals(userDataA);
                 }
 
-                // Call burst on pig if relevant
-                if (pig != null) {
-                    pig.burst();  // Trigger burst effect and subsequent removal
-                    System.out.println("Pig burst called: " + pig);
+                if (userDataA instanceof Bird && userDataB instanceof Pig) {
+                    bird = (Bird) userDataA;
+                    pig = (Pig) userDataB;
+                } else if (userDataB instanceof Bird && userDataA instanceof Pig) {
+                    bird = (Bird) userDataB;
+                    pig = (Pig) userDataA;
+                }
+
+                // Handle pig hitting the bird
+                if (pig != null && bird != null) {
+                    int damage = bird.getType().getPoints();
+                    pig.takeDamage(damage);
+                    if (pig.getHealth() <= 0) {
+                        pig.burst();
+                        score += damage;
+                        scoreLabel.setText("Score: " + score);
+                    }
+                }
+
+                // Handle pig touching the ground
+                if (pig != null && pigOnGround) {
+                    pig.burst();
+                    System.out.println("Pig touched the ground and burst: " + pig);
                 }
             }
 
@@ -191,7 +213,6 @@ public class GameScreen implements Screen {
             GameObject obj = iterator.next();
             if (obj instanceof Pig) {
                 Pig pig = (Pig) obj;
-                //System.out.println("Checking pig: " + pig + " markedForRemoval: " + pig.markedForRemoval);
                 if (pig.isMarkedForRemoval()) {
                     world.destroyBody(pig.getBody());
                     int currscore=pig.getType().getPoints();
@@ -275,6 +296,34 @@ public class GameScreen implements Screen {
 
         stage.act(delta);
         stage.draw();
+    }
+    private void createWorldBounds() {
+        // Define a static body for the walls
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+
+        // Define a shape for the walls
+        EdgeShape edgeShape = new EdgeShape();
+
+        // Create fixtures for the walls
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = edgeShape;
+        fixtureDef.friction = 0.5f;
+
+        // Left wall
+        bodyDef.position.set(0, 0); // Left edge of the world
+        Body leftWall = world.createBody(bodyDef);
+        edgeShape.set(new Vector2(0, 0), new Vector2(0, gamePort.getWorldHeight()));
+        leftWall.createFixture(fixtureDef);
+
+        // Right wall
+        bodyDef.position.set(gamePort.getWorldWidth(), 0); // Right edge of the world
+        Body rightWall = world.createBody(bodyDef);
+        edgeShape.set(new Vector2(0, 0), new Vector2(0, gamePort.getWorldHeight()));
+        rightWall.createFixture(fixtureDef);
+
+        // Dispose of the shape after creating fixtures
+        edgeShape.dispose();
     }
 
 

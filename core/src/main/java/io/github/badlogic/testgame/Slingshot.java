@@ -112,33 +112,53 @@ public class Slingshot extends GameObject {
     private void setLoadedBird(Bird bird) {
         if (bird != null) {
             loadedBird = bird;
-            loadedBird.setPosition(startPosition.x, startPosition.y);
+            loadedBird.setPosition(startPosition.x, startPosition.y); // Positioning bird at slingshot's start position
             loadedBird.getBody().setActive(true);
             System.out.println("Loaded bird: " + loadedBird);
         }
     }
 
-    private void launchBird() {
-        if (loadedBird != null) {
-            System.out.println("Launching bird: " + loadedBird);
-            Vector2 launchVector = startPosition.cpy().sub(loadedBird.getPosition()).scl(5f);
-            loadedBird.getBody().applyLinearImpulse(launchVector, loadedBird.getBody().getWorldCenter(), true);
-            loadedBird = null;
+//    private void launchBird() {
+//        if (loadedBird != null) {
+//            System.out.println("Launching bird: " + loadedBird);
+//            Vector2 launchVector = startPosition.cpy().sub(loadedBird.getPosition()).scl(5f);
+//            loadedBird.getBody().applyLinearImpulse(launchVector, loadedBird.getBody().getWorldCenter(), true);
+//            loadedBird = null;
+//
+//            Timer.schedule(new Timer.Task() { // Delay loading the next bird
+//                @Override
+//                public void run() {
+//                    if (!birdQueue.isEmpty()) {
+//                        setLoadedBird(birdQueue.poll());
+//                    }
+//                }
+//            }, 1); // 1-second delay to avoid overlap
+//        }
+//    }
+private void launchBird() {
+    if (loadedBird == null) {
+        System.out.println("No bird loaded to launch.");
+        return;
+    }
+
+    System.out.println("Launching bird: " + loadedBird);
+    Vector2 launchVector = startPosition.cpy().sub(loadedBird.getPosition()).scl(5f);
+    loadedBird.getBody().applyLinearImpulse(launchVector, loadedBird.getBody().getWorldCenter(), true);
+    loadedBird = null;
 
             Timer.schedule(new Timer.Task() { // Delay loading the next bird
                 @Override
                 public void run() {
                     if (!birdQueue.isEmpty()) {
                         setLoadedBird(birdQueue.poll());
-                    }
-                    else {
+                    }else{
                         // Check the score and required points if all birds are used
                         checkGameOverCondition();
                     }
                 }
             }, 1); // 1-second delay to avoid overlap
         }
-    }
+
 
     private void checkGameOverCondition() {
         // Determine required points for the level
@@ -178,16 +198,16 @@ public class Slingshot extends GameObject {
     }
 
     public void update(float delta) {
-        if (Gdx.input.isTouched() && loadedBird != null) {
+        if (Gdx.input.isTouched()) {
             Vector3 touchPos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos3D);
             Vector2 touchPos = new Vector2(touchPos3D.x, touchPos3D.y);
 
-            if (!isDragging && isInsideSlingArea(touchPos)) {
+            if (!isDragging && loadedBird != null && isInsideSlingArea(touchPos)) {
                 isDragging = true;
             }
 
-            if (isDragging) {
+            if (isDragging && loadedBird != null) {
                 float distance = touchPos.dst(startPosition);
                 if (distance > maxDragDistance) {
                     Vector2 direction = touchPos.sub(startPosition).nor();
@@ -195,6 +215,7 @@ public class Slingshot extends GameObject {
                         startPosition.y + direction.y * maxDragDistance);
                 }
                 loadedBird.setPosition(touchPos.x, touchPos.y);
+                loadedBird.getBody().setTransform(touchPos.x, touchPos.y, 0);  // Ensure body matches visual for dragging
             }
         } else if (isDragging) {
             if (loadedBird != null) {
@@ -203,6 +224,35 @@ public class Slingshot extends GameObject {
             isDragging = false;
         }
     }
+
+//    public void update(float delta) {
+//        if (Gdx.input.isTouched()) {
+//            Vector3 touchPos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+//            camera.unproject(touchPos3D);
+//            Vector2 touchPos = new Vector2(touchPos3D.x, touchPos3D.y);
+//
+//            if (!isDragging && isInsideSlingArea(touchPos)) {
+//                isDragging = true;
+//            }
+//
+//            if (isDragging) {
+//                // Limit dragging distance
+//                float distance = touchPos.dst(startPosition);
+//                if (distance > maxDragDistance) {
+//                    Vector2 direction = touchPos.sub(startPosition).nor();
+//                    touchPos.set(startPosition.x + direction.x * maxDragDistance,
+//                        startPosition.y + direction.y * maxDragDistance);
+//                }
+//                loadedBird.setPosition(touchPos.x, touchPos.y);
+//                loadedBird.getBody().setTransform(touchPos.x, touchPos.y, 0);  // Ensure body matches visual for dragging
+//            }
+//        } else if (isDragging) {
+//            if (loadedBird != null) {
+//                launchBird();
+//            }
+//            isDragging = false;
+//        }
+//    }
 
     @Override
     public void dispose() {
