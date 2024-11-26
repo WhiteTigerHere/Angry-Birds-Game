@@ -56,6 +56,6 @@
 </data>
  </layer>
  <objectgroup id="7" name="ground">
-  <object id="7" x="-1.33333" y="505.333" width="961.333" height="134.667"/>
+  <object id="7" x="-1.33333" y="505.333" width="1829.33" height="134.667"/>
  </objectgroup>
 </map>

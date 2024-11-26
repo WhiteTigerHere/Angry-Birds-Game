@@ -1,7 +1,6 @@
 package io.github.badlogic.testgame;
 
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -117,14 +116,19 @@ public class GameScreen implements Screen {
                     pig = (Pig) userDataA;
                 }
 
-                // Handle pig hitting the bird
+                // Inside your contact listener
                 if (pig != null && bird != null) {
                     int damage = bird.getType().getPoints();
                     pig.takeDamage(damage);
+
+                    // Update score for this hit
+                    score += damage;
+                    scoreLabel.setText("Score: " + score);
+                    System.out.println("Score after hit: " + score);
+
                     if (pig.getHealth() <= 0) {
                         pig.burst();
-                        score += damage;
-                        scoreLabel.setText("Score: " + score);
+                        System.out.println("Pig burst called: " + pig);
                     }
                 }
 
@@ -204,16 +208,20 @@ public class GameScreen implements Screen {
         setInputProcessor();
         score = ScoreManager.getInstance().getScore();
     }
+    private int dead_count=0;
 
     private void update(float delta) {
         world.step(1 / 60f, 6, 2);
 
         Iterator<GameObject> iterator = gameObjects.iterator();
+
         while (iterator.hasNext()) {
             GameObject obj = iterator.next();
             if (obj instanceof Pig) {
                 Pig pig = (Pig) obj;
                 if (pig.isMarkedForRemoval()) {
+                    dead_count++;
+
                     world.destroyBody(pig.getBody());
                     int currscore=pig.getType().getPoints();
                     score+=currscore;
@@ -225,19 +233,31 @@ public class GameScreen implements Screen {
                     int levelnum = Character.getNumericValue(levelno);
                     char leveltheme = levelFileName.charAt(6);
                     int levelthemenum = Character.getNumericValue(leveltheme);
+                    boolean all_pigs_dead=false;
                     int levelpointsrequired=0;
                     if(levelnum==1){
+                        if(dead_count==1){
+                            all_pigs_dead=true;
+                        }
                         levelpointsrequired=2000;
                     }
                     else if(levelnum==2){
+                        if(dead_count==2){
+                            all_pigs_dead=true;
+                        }
                         levelpointsrequired=6000;
                     }
                     else if(levelnum==3){
+                        if(dead_count==3){
+                            all_pigs_dead=true;
+                        }
                         levelpointsrequired=12000;
                     }
 
+
+
                     // Check for Level Win condition
-                    if (score >= levelpointsrequired ) {
+                    if (score >= levelpointsrequired && all_pigs_dead ) {
                         // Transition to Level Win screen
                         if(levelnum==1){
                             score+=600;
@@ -316,11 +336,11 @@ public class GameScreen implements Screen {
         edgeShape.set(new Vector2(0, 0), new Vector2(0, gamePort.getWorldHeight()));
         leftWall.createFixture(fixtureDef);
 
-        // Right wall
-        bodyDef.position.set(gamePort.getWorldWidth(), 0); // Right edge of the world
-        Body rightWall = world.createBody(bodyDef);
-        edgeShape.set(new Vector2(0, 0), new Vector2(0, gamePort.getWorldHeight()));
-        rightWall.createFixture(fixtureDef);
+//        // Right wall
+//        bodyDef.position.set(gamePort.getWorldWidth(), 0); // Right edge of the world
+//        Body rightWall = world.createBody(bodyDef);
+//        edgeShape.set(new Vector2(0, 0), new Vector2(0, gamePort.getWorldHeight()));
+//        rightWall.createFixture(fixtureDef);
 
         // Dispose of the shape after creating fixtures
         edgeShape.dispose();
