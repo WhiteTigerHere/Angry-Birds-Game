@@ -18,11 +18,15 @@ public class LevelWin implements Screen {
     private Skin skin;
     private final String playerName;
     private final int levelScore; // to store score of the level
+    private int levelnum;
+    private int levelthemenum;
 
-    public LevelWin(Core game, String playerName, int levelScore) {
+    public LevelWin(Core game, String playerName, int levelScore, int levelnum, int levelthemenum) {
         this.game = game;
         this.playerName = playerName;
         this.levelScore = levelScore; //to initialize score from memory
+        this.levelnum = levelnum;
+        this.levelthemenum = levelthemenum;
     }
 
     @Override
@@ -72,7 +76,18 @@ public class LevelWin implements Screen {
         nextLevelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenu(game));
+                //game.setScreen(new MainMenu(game));
+                if(levelnum==3){
+                    game.setScreen(new CompletedGame(game));
+                }
+                else if (levelthemenum != -1) {
+                    //String levelfile= "level1"+(selectedTheme+1)+".tmx";
+                    String levelfile= "level"+(levelnum+1)+(levelthemenum)+".tmx";
+
+                    //String levelfile="level11.tmx";
+                    game.setScreen(new GameScreen(game,levelfile));
+
+                }
             }
         });
 

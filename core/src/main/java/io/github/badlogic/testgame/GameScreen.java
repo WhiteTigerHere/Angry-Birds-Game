@@ -202,6 +202,8 @@ public class GameScreen implements Screen {
 
                     char levelno = levelFileName.charAt(5);
                     int levelnum = Character.getNumericValue(levelno);
+                    char leveltheme = levelFileName.charAt(6);
+                    int levelthemenum = Character.getNumericValue(leveltheme);
                     int levelpointsrequired=0;
                     if(levelnum==1){
                         levelpointsrequired=2000;
@@ -231,7 +233,7 @@ public class GameScreen implements Screen {
                             Timer.schedule(new Timer.Task() {
                                 @Override
                                 public void run() {
-                                    game.setScreen(new LevelWin(game, "Red", score));  // Transition with updated score
+                                    game.setScreen(new LevelWin(game, "Red", score, levelnum, levelthemenum));  // Transition with updated score
                                 }
                             }, 2f);  // 2 seconds delay
                         });

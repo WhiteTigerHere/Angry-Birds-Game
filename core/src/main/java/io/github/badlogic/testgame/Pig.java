@@ -157,6 +157,26 @@ public class Pig extends GameObject {
         }, 1f); // Effect lasts the same as removal delay
     }
 
+    public void update() {
+        if (body != null) {
+            // Get screen dimensions in world units
+            float screenWidth = Gdx.graphics.getWidth() / GameScreen.PPM; // PPM = Pixels per meter
+            float screenHeight = Gdx.graphics.getHeight() / GameScreen.PPM;
+
+            float x = body.getPosition().x;
+            float y = body.getPosition().y;
+
+            // Check if the pig is out of bounds
+            if (x < 0 || x > screenWidth || y < 0 || y > screenHeight) {
+                if (!markedForRemoval) {
+                    System.out.println("Pig is out of screen, marking for removal.");
+                    burst(); // Trigger bursting effect and handle score
+                }
+            }
+        }
+    }
+
+
     @Override
     protected Body createBody(World world) {
         return null;
@@ -164,6 +184,7 @@ public class Pig extends GameObject {
 
     @Override
     public void draw(SpriteBatch batch) {
+        update();
         super.draw(batch); // Draw pig if texture is available
         if (burstSprite != null) {
             burstSprite.draw(batch); // Draw burst effect
