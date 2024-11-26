@@ -160,11 +160,12 @@ public class Slingshot extends GameObject {
 
         // If score is less than required points, transition to LostLevel
         if (gameScreen.getScore() < levelPointsRequired) {
+            //String levelfile= "level"+levelNo+(selectedTheme+1)+".tmx
             Gdx.app.postRunnable(() -> {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                        gameScreen.getGame().setScreen(new LostLevel(gameScreen.getGame())); // Transition to LostLevel screen
+                        gameScreen.getGame().setScreen(new LostLevel(gameScreen.getGame(),gameScreen.getLevelFileName())); // Transition to LostLevel screen
                     }
                 }, 2f); // 2-second delay
             });

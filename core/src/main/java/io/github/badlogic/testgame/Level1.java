@@ -23,6 +23,8 @@ public class Level1 extends Level {
         gameObjects.add(new Block(world, 802f / GameScreen.PPM, 210f / GameScreen.PPM, 30f / GameScreen.PPM, 150f / GameScreen.PPM, Block.MaterialType.WOOD));
         gameObjects.add(new Block(world, 720f / GameScreen.PPM, 301f / GameScreen.PPM, 220f / GameScreen.PPM, 30f / GameScreen.PPM, Block.MaterialType.WOOD));
 
+        //String levelfile= gameScreen.getLevelFileName();
+
         Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera,gameScreen);
         gameObjects.add(slingshot);
 

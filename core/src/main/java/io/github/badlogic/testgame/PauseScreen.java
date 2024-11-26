@@ -66,13 +66,13 @@ public class PauseScreen implements Screen {
         mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
         // add restart game button
-        TextButton restartButton = new TextButton("Restart Game", skin);
+        TextButton restartButton = new TextButton("Restart Level", skin);
         buttonTable.add(restartButton).colspan(3).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padRight(50);
 
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                resumeGame();
+                game.setScreen(new GameScreen(game,gameScreen.getLevelFileName()));
             }
         });
 

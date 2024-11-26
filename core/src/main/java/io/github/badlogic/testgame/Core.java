@@ -40,8 +40,8 @@ public class Core extends Game {
         MusicManager.getInstance().playMusic();
         //setScreen(new PauseScreen(this));
         //setScreen(new CompletedGame(this));
-        //setScreen(new LostLevel(this));
-        //setScreen(new LevelWin(this,"Red",7000));
+        //setScreen(new LostLevel(this,"level11.tmx"));
+        //setScreen(new LevelWin(this,"Red",7000,1,1));
     }
 
     // method to generate custom bitmap font

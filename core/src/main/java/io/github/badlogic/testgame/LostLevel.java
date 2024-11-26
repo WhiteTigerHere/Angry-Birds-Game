@@ -20,8 +20,10 @@ public class LostLevel implements Screen {
     private ImageButton[] themeButtons;
     private int selectedTheme = -1;
     private Label[] themeLabels;
+    private String levelfilename;
 
-    public LostLevel(Core game) {
+    public LostLevel(Core game,String levelfilename) {
+        this.levelfilename=levelfilename;
         this.game = game;
     }
 
@@ -63,23 +65,30 @@ public class LostLevel implements Screen {
         mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
         // add restart level button
-        TextButton musicButton = new TextButton("Restart Level", skin);
-        buttonTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(20);
-
-        musicButton.addListener(new ClickListener() {
+        TextButton restartButton = new TextButton("Restart Level", skin);
+        buttonTable.add(restartButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(20);
+        restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // will code later
+                game.setScreen(new GameScreen(game,levelfilename)); // Replace with the appropriate screen class for the level
+                //dispose();
             }
         });
+
+//        musicButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                // will code later
+//            }
+//        });
 
         mainTable.row().padTop(20);
 
         // add main menu button
-        TextButton resumeButton = new TextButton("Main Menu", skin);
-        mainTable.add(resumeButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(60);
+        TextButton mainmenuButton = new TextButton("Main Menu", skin);
+        mainTable.add(mainmenuButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(60);
 
-        resumeButton.addListener(new ClickListener() {
+        mainmenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new MainMenu(game)); // returns to main menu
