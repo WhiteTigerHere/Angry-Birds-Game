@@ -6,8 +6,8 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public class Bird extends GameObject {
     public enum BirdType {
-        RED("redbird.png", 0.6f, 0.6f, 0.7f,400),
-        YELLOW("yellowbird.jpg", 0.6f, 0.6f, 0.7f,600),
+        RED("redbird.png", 0.6f, 0.6f, 0.8f,400),
+        YELLOW("yellowbird.jpg", 0.6f, 0.6f, 0.8f,600),
         BLACK("blackbird.png", 0.9f, 0.9f, 0.8f,800);
 
         private final String texturePath;
@@ -84,7 +84,7 @@ public class Bird extends GameObject {
         fdef.shape = shape;
         fdef.density = type.getDensity();
         fdef.friction = 0.9f;
-        fdef.restitution = 0.2f;
+        fdef.restitution = 0.0f;
 
         body.createFixture(fdef);
         shape.dispose();
