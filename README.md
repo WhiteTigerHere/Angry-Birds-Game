@@ -59,7 +59,7 @@ Here's the updated README file reflecting the fully functioning game, with seria
     - Ensures that game logic is robust and bug-free.
 
 ### Demo Video
-A demo video demonstrating gameplay, serialization, level progression, and testing is available [here](#).
+A demo video demonstrating gameplay, serialization, level progression, and testing is available [here](https://drive.google.com/file/d/1YHKMjD08db50Uv-MnZiPk0fxiBs-O7mo/view?usp=sharing).
 
 ---
 
