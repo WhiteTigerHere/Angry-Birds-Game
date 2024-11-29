@@ -120,11 +120,6 @@ public class Pig extends GameObject {
         // Create burst effect
         createBurstEffect(body.getPosition().x, body.getPosition().y);
 
-        // Add score based on pig type using ScoreManager
-//        int points = type.getPoints();
-//        ScoreManager.getInstance().addScore(points); // Update score using the ScoreManager
-//
-        // Schedule removal after a delay
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
@@ -147,40 +142,20 @@ public class Pig extends GameObject {
         return this.body;
     }
 
-
-    //    private void createBurstEffect(float x, float y) {
-//        // Example: Show a single "burst" image
-//        Sprite burstSprite = new Sprite(new Texture("burst.png"));
-//        burstSprite.setSize(1, 1); // Adjust size as needed
-//        burstSprite.setPosition(x - 0.5f, y - 0.5f); // Center it
-//
-//        // Add the burst sprite to a temporary list for rendering
-//        burstEffects.add(burstSprite);
-//
-//        // Schedule removal after a short delay
-//        Timer.schedule(new Timer.Task() {
-//            @Override
-//            public void run() {
-//                burstEffects.remove(burstSprite);
-//            }
-//        }, 0.5f); // Show for 0.5 seconds
-//    }
     private Sprite burstSprite = null;
 
     private void createBurstEffect(float x, float y) {
         if (burstSprite == null) {
             burstSprite = new Sprite(new Texture("burst.png"));
-            burstSprite.setSize(1, 1); // Adjust size as needed
+            burstSprite.setSize(1, 1);
         }
         burstSprite.setPosition(x - 0.5f, y - 0.5f); // Center it
-
-        // Ensure rendering during the burst lifespan
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                burstSprite = null; // Clear the effect after displaying
+                burstSprite = null;
             }
-        }, 1f); // Effect lasts the same as removal delay
+        }, 1f);
     }
 
     public void update() {
@@ -202,7 +177,6 @@ public class Pig extends GameObject {
         }
     }
 
-
     @Override
     protected Body createBody(World world) {
         return null;
@@ -216,35 +190,9 @@ public class Pig extends GameObject {
             burstSprite.draw(batch); // Draw burst effect
         }
     }
-
-    // Add the getPosition method to access the Block's position
     public Vector2 getPosition() {
         return body.getPosition();
     }
-
-    public PigData toData() {
-        return new PigData(getPosition().x, getPosition().y, type.name(), getHealth());
-    }
-
-    public static Pig fromData(World world, PigData data) {
-        Pig pig = new Pig(world, data.x, data.y, PigType.valueOf(data.type));
-        pig.takeDamage(pig.getHealth() - data.health); // Adjust health
-        return pig;
-    }
-
-    public static class PigData implements Serializable {
-        public float x, y;
-        public String type;
-        public int health;
-
-        public PigData(float x, float y, String type, int health) {
-            this.x = x;
-            this.y = y;
-            this.type = type;
-            this.health = health;
-        }
-    }
-
 
 }
 

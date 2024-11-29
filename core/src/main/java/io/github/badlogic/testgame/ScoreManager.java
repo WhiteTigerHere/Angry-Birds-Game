@@ -9,7 +9,6 @@ public class ScoreManager {
         score = 0;  // Initialize score to 0
     }
 
-    // Get the singleton instance of ScoreManager
     public static ScoreManager getInstance() {
         if (instance == null) {
             instance = new ScoreManager();
@@ -20,7 +19,6 @@ public class ScoreManager {
     // Add points to the current score
     public void addScore(int points) {
         score += points;
-        //System.out.println("Score updated! Current score: " + score);
     }
 
     // Get the current score

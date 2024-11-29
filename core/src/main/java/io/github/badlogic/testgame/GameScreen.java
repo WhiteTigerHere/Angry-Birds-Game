@@ -42,15 +42,10 @@ public class GameScreen implements Screen {
     private Level level;
     private Stage stage;
     private Label scoreLabel;
-    private int score = 0; // keeps track of the player's score
+    private int score ; // keeps track of the player's score
+    private int dead_count;
     public static final float PPM = 100;
-    private List<Bird> birds;
-    private List<Pig> pigs;
-    private List<Block> blocks;
-    //public int birdcount=3;
-    //private OrthographicCamera camera;
     private Slingshot slingshot;
-    private InputProcessor inputProcessor;
     private InputMultiplexer inputMultiplexer;
 
     // Setter method for slingshot
@@ -93,9 +88,6 @@ public class GameScreen implements Screen {
     public GameScreen(Core game, String levelFileName) {
         this.game = game;
         this.levelFileName = levelFileName;
-        //camera = this.getCamera();
-
-
 
         // Load the map first
         TmxMapLoader mapLoader = new TmxMapLoader();
@@ -105,7 +97,6 @@ public class GameScreen implements Screen {
             map = mapLoader.load(levelFileName);
         } else {
             Gdx.app.error("GameScreen", "Map file not found: " +levelFileName);
-            // Handle gracefully (e.g., use a default map or terminate)
         }
 
         // Get map properties
@@ -260,7 +251,7 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(inputMultiplexer);
         score = ScoreManager.getInstance().getScore();
     }
-    private int dead_count=0;
+
 
     private void update(float delta) {
         world.step(1 / 60f, 6, 2);
@@ -305,8 +296,6 @@ public class GameScreen implements Screen {
                         }
                         levelpointsrequired=12000;
                     }
-
-
 
                     // Check for Level Win condition
                     if (score >= levelpointsrequired && all_pigs_dead ) {
@@ -431,7 +420,7 @@ public class GameScreen implements Screen {
     }
 
     public void saveGame(World world, Slingshot slingshot, List<GameObject> gameObjects, String levelFileName, int score, String saveFilePath) {
-        GameState gameState = new GameState(levelFileName, score);
+        GameState gameState = new GameState(levelFileName, score, dead_count);
 
         // Serialize game objects
         for (GameObject obj : gameObjects) {
@@ -482,45 +471,38 @@ public class GameScreen implements Screen {
                 throw new IllegalStateException("GameState is null, cannot restore the game");
             }
 
-            // Destroy existing bodies to prevent lingering shapes
+
             for (GameObject obj : gameScreen.getGameObjects()) {
                 if (obj.getBody() != null) {
                     world.destroyBody(obj.getBody());
                 }
             }
 
-            // Now clear the game objects list
             gameScreen.getGameObjects().clear();
 
-
+            Gdx.app.log("GameState", "Restoring game with score: " + gameState.score);
+            gameScreen.setScore(gameState.score);
+            gameScreen.setDeadCount(gameState.deadCount);
 
             Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, gameCam,gameScreen);
             gameScreen.setSlingshot(slingshot);
             gameObjects.add(slingshot);
-            // Handle birds based on their launch state
             if (gameState.birds != null) {
                 for (BirdState birdState : gameState.birds) {
                     Bird bird = new Bird(world, birdState.x, birdState.y, Bird.BirdType.valueOf(birdState.birdType));
-
                     if (birdState.isLaunched) {
-                        // For launched birds, restore them at their saved position
                         bird.setLaunched(true);
                         bird.getBody().setLinearVelocity(birdState.velocityX, birdState.velocityY);
                         gameScreen.getGameObjects().add(bird);
                     } else {
-                        // For unlaunched birds, add them to the slingshot queue
-                       // bird.setPosition(slingshot.getPosition().x, slingshot.getPosition().y);
                         slingshot.loadBird(bird);
                         gameScreen.getGameObjects().add(bird);
                     }
                 }
             }
-            //gameScreen.setSlingshot(slingshot);
 
-            // Make sure to enable input processing
             Gdx.input.setInputProcessor(gameScreen.getInputMultiplexer());
 
-            // Recreate pigs
             if (gameState.pigs != null) {
                 for (PigState pigState : gameState.pigs) {
                     Pig pig = new Pig(world, pigState.x, pigState.y, Pig.PigType.valueOf(pigState.pigType));
@@ -528,31 +510,25 @@ public class GameScreen implements Screen {
                 }
             }
 
-            // Recreate blocks
             if (gameState.blocks != null) {
                 for (BlockState blockState : gameState.blocks) {
                     Block block = new Block(world, blockState.x, blockState.y, blockState.width, blockState.height, Block.MaterialType.valueOf(blockState.materialType));
                     gameScreen.getGameObjects().add(block);
                 }
             }
-
-
-
-            // Log restoration success
             Gdx.app.log("GameState", "Game restored successfully");
         } catch (Exception e) {
             Gdx.app.error("GameState", "Error during game restoration", e);
-            // Optional: handle fallback logic if restoration partially fails
         }
     }
 
-    public InputProcessor getInputProcessor() {
-        return inputProcessor;
+    public void setDeadCount(int count) {
+        this.dead_count = count;
     }
 
     public void saveCurrentGame() {
         String saveFilePath = "savegame.json"; // Example save file
-        saveGame(world, slingshot, gameObjects, levelFileName, score, saveFilePath);
+        saveGame(world, slingshot, gameObjects, levelFileName, this.score, saveFilePath);
     }
 
     public void loadSavedGame() {
@@ -571,17 +547,23 @@ public class GameScreen implements Screen {
 
                 // Restore game state onto the new screen
                 newGameScreen.restoreGame(newGameScreen.world, newGameScreen, gameState);
-                newGameScreen.score = gameState.score;
+                newGameScreen.setScore(gameState.score);
 
                 // Set the new GameScreen as the active screen
                 this.game.setScreen(newGameScreen);
 
-                Gdx.app.log("GameScreen", "Game loaded successfully");
-            } catch (Exception e) {
+                Gdx.app.log("GameScreen", "Game loaded successfully with score: " + gameState.score);            } catch (Exception e) {
                 Gdx.app.error("GameScreen", "Error initializing GameScreen with saved data", e);
             }
         } else {
             Gdx.app.log("GameScreen", "No saved game found or error occurred");
+        }
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+        if (scoreLabel != null) {
+            scoreLabel.setText("Score: " + this.score);
         }
     }
 

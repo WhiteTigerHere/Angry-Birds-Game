@@ -1,8 +1,5 @@
 package io.github.badlogic.testgame;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +7,7 @@ public class SlingshotState {
     public float x;
     public float y;
     public int loadedBirdIndex;
-    public List<BirdState> queuedBirds; // Add this to store birds in queue
+    public List<BirdState> queuedBirds;
 
     public SlingshotState(Slingshot slingshot) {
         this.x = slingshot.getPosition().x;

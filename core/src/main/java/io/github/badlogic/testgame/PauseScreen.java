@@ -12,9 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-
 public class PauseScreen implements Screen {
     private final Core game;
     private GameScreen gameScreen;
@@ -22,8 +19,6 @@ public class PauseScreen implements Screen {
     private Stage stage;
     private Skin skin;
     private ImageButton[] themeButtons;
-    private int selectedTheme = -1;
-    private Label[] themeLabels;
     private TextButton musicButton;
 
     public PauseScreen(Core game, GameScreen gameScreen) {

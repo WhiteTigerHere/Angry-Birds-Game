@@ -10,9 +10,11 @@ public class GameState {
     public SlingshotState slingshot;
     public String levelFileName;
     public int score;
+    public int deadCount;
 
-    public GameState(String levelFileName, int score) {
+    public GameState(String levelFileName, int score, int deadCount) {
         this.levelFileName = levelFileName;
         this.score = score;
+        this.deadCount = deadCount;
     }
 }
