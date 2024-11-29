@@ -100,6 +100,13 @@ public class GameScreen implements Screen {
         TmxMapLoader mapLoader = new TmxMapLoader();
         map = mapLoader.load(levelFileName);
 
+        if (Gdx.files.internal(levelFileName).exists()) {
+            map = mapLoader.load(levelFileName);
+        } else {
+            Gdx.app.error("GameScreen", "Map file not found: " +levelFileName);
+            // Handle gracefully (e.g., use a default map or terminate)
+        }
+
         // Get map properties
         int mapWidth = map.getProperties().get("width", Integer.class);
         int mapHeight = map.getProperties().get("height", Integer.class);
@@ -209,7 +216,7 @@ public class GameScreen implements Screen {
         Skin skin=game.skin;
 
         // create pause button
-        Texture pauseTexture = new Texture(Gdx.files.internal("pause2.png"));
+        Texture pauseTexture = new Texture(Gdx.files.internal("pausebutjpg.jpg"));
         ImageButton pauseButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(pauseTexture)));
 
         pauseButton.addListener(new ClickListener() {
@@ -344,11 +351,6 @@ public class GameScreen implements Screen {
         game.batch.end();
 
         b2rend.render(world, gameCam.combined);
-
-        // Render slingshot string and trajectory
-        //Slingshot.getInstance(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera).renderString();
-        //Slingshot.getInstance(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera).renderTrajectory();
-
         stage.act(delta);
         stage.draw();
     }
@@ -421,39 +423,28 @@ public class GameScreen implements Screen {
     public void saveGame(World world, Slingshot slingshot, List<GameObject> gameObjects, String levelFileName, int score, String saveFilePath) {
         GameState gameState = new GameState(levelFileName, score);
 
-        // Serialize birds
+        // Serialize game objects
         for (GameObject obj : gameObjects) {
             if (obj instanceof Bird) {
-                Bird bird = (Bird) obj;
-                gameState.birds.add(new BirdState(bird));
-            }
-        }
-
-        // Serialize pigs
-        for (GameObject obj : gameObjects) {
-            if (obj instanceof Pig) {
-                Pig pig = (Pig) obj;
-                gameState.pigs.add(new PigState(pig));
-            }
-        }
-
-        // Serialize blocks
-        for (GameObject obj : gameObjects) {
-            if (obj instanceof Block) {
-                Block block = (Block) obj;
-                gameState.blocks.add(new BlockState(block));
+                gameState.birds.add(new BirdState((Bird) obj));
+            } else if (obj instanceof Pig) {
+                gameState.pigs.add(new PigState((Pig) obj));
+            } else if (obj instanceof Block) {
+                gameState.blocks.add(new BlockState((Block) obj));
             }
         }
 
         // Serialize slingshot
-        if (slingshot != null) {
-            gameState.slingshot = new SlingshotState(slingshot);
-            Gdx.app.log("GameScreen", "Game saved with slingshot state.");
+        if (slingshot == null || slingshot.getPosition() == null) {
+            Gdx.app.error("GameScreen", "Slingshot is null or has no position. Using default slingshot state.");
+            Slingshot slingshot_default = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, gameCam,this);
+
+            gameState.slingshot = new SlingshotState(slingshot_default);
         } else {
-            Gdx.app.error("GameScreen", "Slingshot is null. Cannot save game.");
+            gameState.slingshot = new SlingshotState(slingshot);
         }
 
-        // Serialize game state to file
+        // Save to file
         try (FileWriter writer = new FileWriter(saveFilePath)) {
             Gson gson = new Gson();
             gson.toJson(gameState, writer);
@@ -462,6 +453,7 @@ public class GameScreen implements Screen {
             Gdx.app.error("GameState", "Error saving game", e);
         }
     }
+
 
     public GameState loadGame(String saveFilePath) {
         try (FileReader reader = new FileReader(saveFilePath)) {
@@ -474,36 +466,65 @@ public class GameScreen implements Screen {
     }
 
     public void restoreGame(World world, GameScreen gameScreen, GameState gameState) {
-        // Recreate birds
-        for (BirdState birdState : gameState.birds) {
-            Bird bird = new Bird(world, birdState.x, birdState.y, Bird.BirdType.valueOf(birdState.birdType));
-            bird.getBody().setLinearVelocity(birdState.velocityX, birdState.velocityY);
-            gameScreen.getGameObjects().add(bird);
+        try {
+            // Validate gameState before restoring
+            if (gameState == null) {
+                throw new IllegalStateException("GameState is null, cannot restore the game");
+            }
+
+            // Destroy existing bodies to prevent lingering shapes
+            for (GameObject obj : gameScreen.getGameObjects()) {
+                if (obj.getBody() != null) {
+                    world.destroyBody(obj.getBody());
+                }
+            }
+
+            // Now clear the game objects list
+            gameScreen.getGameObjects().clear();
+            // Recreate birds
+            if (gameState.birds != null) {
+                for (BirdState birdState : gameState.birds) {
+                    Bird bird = new Bird(world, birdState.x, birdState.y, Bird.BirdType.valueOf(birdState.birdType));
+                    bird.getBody().setLinearVelocity(birdState.velocityX, birdState.velocityY);
+                    gameScreen.getGameObjects().add(bird);
+                }
+            }
+
+            // Recreate pigs
+            if (gameState.pigs != null) {
+                for (PigState pigState : gameState.pigs) {
+                    Pig pig = new Pig(world, pigState.x, pigState.y, Pig.PigType.valueOf(pigState.pigType));
+                    gameScreen.getGameObjects().add(pig);
+                }
+            }
+
+            // Recreate blocks
+            if (gameState.blocks != null) {
+                for (BlockState blockState : gameState.blocks) {
+                    Block block = new Block(world, blockState.x, blockState.y, blockState.width, blockState.height, Block.MaterialType.valueOf(blockState.materialType));
+                    gameScreen.getGameObjects().add(block);
+                }
+            }
+
+            // Validate and restore slingshot
+            if (gameState.slingshot == null) {
+                throw new IllegalStateException("Slingshot state is null in GameState");
+            }
+            Slingshot slingshot = new Slingshot(world, gameState.slingshot.x, gameState.slingshot.y, 50, 100, gameScreen.getCamera(), gameScreen);
+            slingshot.setLoadedBirdIndex(gameState.slingshot.loadedBirdIndex);
+            gameScreen.setSlingshot(slingshot);
+
+            // Log restoration success
+            Gdx.app.log("GameState", "Game restored successfully");
+        } catch (Exception e) {
+            Gdx.app.error("GameState", "Error during game restoration", e);
+            // Optional: handle fallback logic if restoration partially fails
         }
-
-        // Recreate pigs
-        for (PigState pigState : gameState.pigs) {
-            Pig pig = new Pig(world, pigState.x, pigState.y, Pig.PigType.valueOf(pigState.pigType));
-            gameScreen.getGameObjects().add(pig);
-        }
-
-        // Recreate blocks
-        for (BlockState blockState : gameState.blocks) {
-            Block block = new Block(world, blockState.x, blockState.y, blockState.width, blockState.height, Block.MaterialType.valueOf(blockState.materialType));
-            gameScreen.getGameObjects().add(block);
-        }
-
-        // Restore slingshot
-        Slingshot slingshot = new Slingshot(world, gameState.slingshot.x, gameState.slingshot.y, 50, 100, gameScreen.getCamera(), gameScreen);
-        slingshot.setLoadedBirdIndex(gameState.slingshot.loadedBirdIndex);
-        gameScreen.setSlingshot(slingshot);
-
-        Gdx.app.log("GameState", "Game restored successfully");
     }
 
     public void saveCurrentGame() {
         String saveFilePath = "savegame.json"; // Example save file
-        saveGame(world,slingshot,getGameObjects(), getLevelFileName(), getScore(),saveFilePath);
+        saveGame(world, slingshot, gameObjects, levelFileName, score, saveFilePath);
     }
 
     public void loadSavedGame() {
@@ -511,10 +532,26 @@ public class GameScreen implements Screen {
         GameState gameState = loadGame(saveFilePath);
 
         if (gameState != null) {
-            restoreGame(world, this, gameState);
-            score = gameState.score;
-            levelFileName = gameState.levelFileName;
-            Gdx.app.log("GameScreen", "Game loaded successfully");
+            // Create a new GameScreen using the saved levelFileName
+            if (gameState.levelFileName == null) {
+                Gdx.app.error("GameScreen", "No level file name in saved game.");
+                return;
+            }
+
+            try {
+                GameScreen newGameScreen = new GameScreen(this.game, gameState.levelFileName);
+
+                // Restore game state onto the new screen
+                newGameScreen.restoreGame(newGameScreen.world, newGameScreen, gameState);
+                newGameScreen.score = gameState.score;
+
+                // Set the new GameScreen as the active screen
+                this.game.setScreen(newGameScreen);
+
+                Gdx.app.log("GameScreen", "Game loaded successfully");
+            } catch (Exception e) {
+                Gdx.app.error("GameScreen", "Error initializing GameScreen with saved data", e);
+            }
         } else {
             Gdx.app.log("GameScreen", "No saved game found or error occurred");
         }
@@ -522,3 +559,6 @@ public class GameScreen implements Screen {
 
 
 }
+
+
+

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Null;
 
 import java.io.Serializable;
 
@@ -18,7 +19,7 @@ public class Block extends GameObject {
     public enum MaterialType {
         WOOD(Color.BROWN, 1f, 0.9f, 0f),      // Default values for wood
         ICE(new Color(0.7f, 0.8f, 0.9f, 0.7f), 0.5f, 0.1f, 0f), // Transparent sky-blue
-        CEMENT(Color.GRAY, 2f, 0.9f, 0f);    // Gray color, higher density
+        CEMENT(Color.GRAY, 2f, 0.9f, 0f);// Gray color, higher density
 
         public final Color color;
         public final float density;

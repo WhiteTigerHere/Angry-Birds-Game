@@ -36,6 +36,11 @@ public class Slingshot extends GameObject {
         this.gameScreen = gameScreen;
     }
 
+    public Vector2 getPosition() {
+        return startPosition;
+    }
+
+
     public static Slingshot getInstance(World world, float x, float y, float width, float height, Camera camera, GameScreen gameScreen) {
         if (instance == null) {
             instance = new Slingshot(world, x, y, width, height, camera,gameScreen);

@@ -69,4 +69,8 @@ public abstract class GameObject extends Sprite {
                 getHeight());
         }
     }
+
+    public Body getBody() {
+        return body;
+    }
 }

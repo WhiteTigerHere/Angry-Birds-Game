@@ -106,11 +106,24 @@ public class MainMenu implements Screen {
         SavedGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                gameScreen=new GameScreen(game,null);
-                gameScreen.loadSavedGame();
-                //game.setScreen(new SavedGame(game, playerNameField.getName()));
+                // First, create a new GameScreen instance (initializing gameScreen properly)
+               // gameScreen = new GameScreen(game, null);  // Initialize with null or use a default level for fallback
+// MainMenu SavedGameButton listener
+                gameScreen = new GameScreen(game, "level11.tmx"); // Use default path if needed
+                // Load the game state from the save file
+                String saveFilePath = "savegame.json"; // Path to your save file
+                GameState gameState = gameScreen.loadGame(saveFilePath);
+
+                if (gameState != null && gameState.levelFileName != null) {
+                    // If game state is valid and level file name is available, create GameScreen with the levelFileName
+                    gameScreen = new GameScreen(game, gameState.levelFileName);
+                    gameScreen.loadSavedGame();  // Load the saved game state
+                } else {
+                    Gdx.app.error("MainMenu", "Failed to load saved game or level file is missing.");
+                }
             }
         });
+
 
         // add exit button
         TextButton ExitButton = new TextButton("Exit", skin);

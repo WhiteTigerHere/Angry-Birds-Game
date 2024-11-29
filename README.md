@@ -25,6 +25,7 @@ This project is built using LibGDX as the main framework, and it demonstrates UI
 ---
 
 ## Features
+- **Implement Gameplay**: Currently, only the static UI elements are implemented. The next step is to add gameplay mechanics like bird launching and projection, pig and structure destruction, managing collision and level progression
 
 - **First Screen**: A simple first screen with game page
 - **Main Menu**: A simple entry screen of the game with buttons to start a new game, load a saved game, toggle music, enter player name and exit the game. 
@@ -34,13 +35,17 @@ This project is built using LibGDX as the main framework, and it demonstrates UI
 - **Level**: Game levels utilise .tmx files and object classes for dynamic loading of different level configurations. We further have different level classes for each level.
 - **Bird**: This class contains the necessary attributes for bird object. We are implementing three types of birds- Red, Chuck, Bomb.
 - **Pig**: This class contains the necessary attributes for pig object. We are implementing different types of pigs.
-- **Blocks**: This class contains the necessary attributes for block structure object. We are implementing three types of block- wooden, ice, stone.
+- **Blocks**: This class contains the necessary attributes for block structure object. We are implementing three types of block- wooden, ice, cement.
+- **Slingshot**: this class enables user to drag and release the bird to launch it toward the pigs.
 - **Pause Menu Screen**: Pause the game, resume, restart, toggle music, or return to the main menu. 
+- **Scoring System**: Track and display scores dynamically.
 - **Level Win Screen**: Shows the player's score after winning a level. Buttons to go to Next level and return to main menu.
 - **Lost Level Screen**: Shows a screen when the player loses a level. Restart level and return to main menu buttons. 
 - **Completed Game Screen**: End-of-game screen after all levels are completed. 
 - **Game Settings**: Manage settings like toggling music through the MusicManager class. 
 - **Dynamic UI Layout**: Buttons and UI elements are responsive and adjust based on the screen size.
+- **Gameplay Logic**: Adding physics-based interactions, bird launching, and collisions.
+- **Level Progression**: Implementing level progression logic.
 
 ---
 
@@ -156,7 +161,7 @@ To launch the game, run the following command for the desktop platform:
 ./gradlew lwjgl3:run
 ```
 
-This will open the game in a desktop window with the static UI.
+This will open the game in a desktop window ready to be played.
 
 ---
 
@@ -164,16 +169,14 @@ This will open the game in a desktop window with the static UI.
 
 - **Buttons**: Skin files for the buttons are loaded from `uiskin.json` (located in the `assets` folder).
 - **Fonts**: The font used in the game is dynamically generated using `FreeTypeFontGenerator` and loaded from `ARIAL.TTF`.
-- **Images**: Taken from google and Angry Birds Wiki website
+- **Images**: Taken from the Internet and Angry Birds Wiki website
 
 ## Future Improvements
 
-- **Implement Gameplay**: Currently, only the static UI elements are implemented. The next step is to add gameplay mechanics like bird launching and projection, pig and structure destruction, managing collision and level progression.
 - **Level Designs**: Each level will feature a unique combination of birds, pigs, and structures. This will be added in future iterations.
 - **More Sound Effects**: Add sound effects for launching birds and breaking structures.
-- **Gameplay Logic**: Adding physics-based interactions, bird launching, and collisions.
-- **Level Progression**: Implementing level progression logic.
-- **Scoring System**: Track and display scores dynamically.
+
+
 
 ## Online Resources
 
