@@ -70,8 +70,15 @@ public class LevelWin implements Screen {
         Table buttonTable = new Table();
         mainTable.add(buttonTable).padTop(20);
 
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+
+        textButtonStyle.up = skin.newDrawable("default-round", Color.CYAN); // Button background (default state)
+        textButtonStyle.over = skin.newDrawable("default-round", Color.CORAL); // Hover effect
+        textButtonStyle.down = skin.newDrawable("default-round", Color.CORAL); // Clicked effect
+        textButtonStyle.font = skin.getFont("default-font");
+
         // add next level button
-        TextButton nextLevelButton = new TextButton("Next Level", skin);
+        TextButton nextLevelButton = new TextButton("Next Level", textButtonStyle);
         buttonTable.add(nextLevelButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padRight(50);
         nextLevelButton.addListener(new ClickListener() {
             @Override
@@ -92,7 +99,7 @@ public class LevelWin implements Screen {
         });
 
         // add main menu button
-        TextButton mainMenuButton = new TextButton("Main Menu", skin);
+        TextButton mainMenuButton = new TextButton("Main Menu", textButtonStyle);
         buttonTable.add(mainMenuButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(50);
         mainMenuButton.addListener(new ClickListener() {
             @Override

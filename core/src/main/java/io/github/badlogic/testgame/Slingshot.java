@@ -77,6 +77,13 @@ public class Slingshot extends GameObject {
         }
     }
 
+//    public Queue<Bird> getBirdQueue() {
+//        return birdQueue;
+//    }
+
+    public Bird getLoadedBird() {
+        return loadedBird;
+    }
 
     private void launchBird() {
         if (loadedBird == null) {

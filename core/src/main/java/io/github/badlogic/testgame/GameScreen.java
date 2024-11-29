@@ -213,7 +213,7 @@ public class GameScreen implements Screen {
         Skin skin=game.skin;
 
         // create pause button
-        Texture pauseTexture = new Texture(Gdx.files.internal("pausebutjpg.jpg"));
+        Texture pauseTexture = new Texture(Gdx.files.internal("pause2.png"));
         ImageButton pauseButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(pauseTexture)));
 
         pauseButton.addListener(new ClickListener() {

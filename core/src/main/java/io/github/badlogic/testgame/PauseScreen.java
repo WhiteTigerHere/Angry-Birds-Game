@@ -63,8 +63,15 @@ public class PauseScreen implements Screen {
         Table buttonTable = new Table();
         mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+
+        textButtonStyle.up = skin.newDrawable("default-round", Color.CYAN); // Button background (default state)
+        textButtonStyle.over = skin.newDrawable("default-round", Color.CORAL); // Hover effect
+        textButtonStyle.down = skin.newDrawable("default-round", Color.CORAL); // Clicked effect
+        textButtonStyle.font = skin.getFont("default-font");
+
         // add restart game button
-        TextButton restartButton = new TextButton("Restart Level", skin);
+        TextButton restartButton = new TextButton("Restart Level", textButtonStyle);
         buttonTable.add(restartButton).colspan(3).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padRight(50);
 
         restartButton.addListener(new ClickListener() {
@@ -75,7 +82,7 @@ public class PauseScreen implements Screen {
         });
 
         // add music toggle button
-        musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", skin);
+        musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", textButtonStyle);
         buttonTable.add(musicButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(50);
 
         musicButton.addListener(new ClickListener() {
@@ -89,7 +96,7 @@ public class PauseScreen implements Screen {
         });
 
         // add main menu button
-        TextButton homeButton = new TextButton("Main Menu", skin);
+        TextButton homeButton = new TextButton("Main Menu", textButtonStyle);
         buttonTable.add(homeButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(60);
 
         homeButton.addListener(new ClickListener() {
@@ -102,7 +109,7 @@ public class PauseScreen implements Screen {
         mainTable.row().padTop(40);
 
         // add resume button
-        TextButton resumeButton = new TextButton("Resume", skin);
+        TextButton resumeButton = new TextButton("Resume", textButtonStyle);
         mainTable.add(resumeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padTop(50);
 
         resumeButton.addListener(new ClickListener() {
@@ -113,7 +120,7 @@ public class PauseScreen implements Screen {
         });
 
         // add save game button
-        TextButton saveGameButton = new TextButton("Save Game", skin);
+        TextButton saveGameButton = new TextButton("Save Game", textButtonStyle);
         mainTable.add(saveGameButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(50).padTop(50);
 
         saveGameButton.addListener(new ClickListener() {

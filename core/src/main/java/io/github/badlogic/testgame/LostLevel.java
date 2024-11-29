@@ -64,8 +64,15 @@ public class LostLevel implements Screen {
         Table buttonTable = new Table();
         mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+
+        textButtonStyle.up = skin.newDrawable("default-round", Color.CYAN); // Button background (default state)
+        textButtonStyle.over = skin.newDrawable("default-round", Color.CORAL); // Hover effect
+        textButtonStyle.down = skin.newDrawable("default-round", Color.CORAL); // Clicked effect
+        textButtonStyle.font = skin.getFont("default-font");
+
         // add restart level button
-        TextButton restartButton = new TextButton("Restart Level", skin);
+        TextButton restartButton = new TextButton("Restart Level", textButtonStyle);
         buttonTable.add(restartButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(20);
         restartButton.addListener(new ClickListener() {
             @Override
@@ -85,7 +92,7 @@ public class LostLevel implements Screen {
         mainTable.row().padTop(20);
 
         // add main menu button
-        TextButton mainmenuButton = new TextButton("Main Menu", skin);
+        TextButton mainmenuButton = new TextButton("Main Menu", textButtonStyle);
         mainTable.add(mainmenuButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).padLeft(30).padTop(60);
 
         mainmenuButton.addListener(new ClickListener() {

@@ -50,8 +50,15 @@ public class CompletedGame implements Screen {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+
+        textButtonStyle.up = skin.newDrawable("default-round", Color.CYAN); // Button background (default state)
+        textButtonStyle.over = skin.newDrawable("default-round", Color.CORAL); // Hover effect
+        textButtonStyle.down = skin.newDrawable("default-round", Color.CORAL); // Clicked effect
+        textButtonStyle.font = skin.getFont("default-font");
+
         // create home button
-        TextButton homeButton = new TextButton("Main Menu", skin);
+        TextButton homeButton = new TextButton("Main Menu", textButtonStyle);
         mainTable.add(homeButton).width(Value.percentWidth(0.15f, mainTable)).height(Value.percentWidth(0.07f, mainTable)).expandX().bottom().padBottom(120).padRight(70);
 
         mainTable.setFillParent(true);

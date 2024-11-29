@@ -106,8 +106,15 @@ public class NewGame implements Screen {
         Table buttonTable = new Table();
         mainTable.add(buttonTable).colspan(3).center().padTop(20);
 
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+
+        textButtonStyle.up = skin.newDrawable("default-round", Color.CYAN); // Button background (default state)
+        textButtonStyle.over = skin.newDrawable("default-round", Color.CORAL); // Hover effect
+        textButtonStyle.down = skin.newDrawable("default-round", Color.CORAL); // Clicked effect
+        textButtonStyle.font = skin.getFont("default-font");
+
         // add start game button
-        TextButton startButton = new TextButton("Start Game", skin);
+        TextButton startButton = new TextButton("Start Game", textButtonStyle);
         buttonTable.add(startButton).colspan(3).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(100);
 
         startButton.addListener(new ClickListener() {
@@ -125,7 +132,7 @@ public class NewGame implements Screen {
         });
 
         // add main menu button
-        TextButton homeButton = new TextButton("Main Menu", skin);
+        TextButton homeButton = new TextButton("Main Menu", textButtonStyle);
         buttonTable.add(homeButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padLeft(100);
 
         homeButton.addListener(new ClickListener() {

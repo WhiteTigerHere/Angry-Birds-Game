@@ -4,10 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.graphics.Color;
 import static com.badlogic.gdx.Gdx.files;
@@ -49,6 +52,14 @@ public class MainMenu implements Screen {
         stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         Gdx.input.setInputProcessor(stage);
 
+
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+
+        textButtonStyle.up = skin.newDrawable("default-round", Color.CYAN); // Button background (default state)
+        textButtonStyle.over = skin.newDrawable("default-round", Color.CORAL); // Hover effect
+        textButtonStyle.down = skin.newDrawable("default-round", Color.CORAL); // Clicked effect
+        textButtonStyle.font = skin.getFont("default-font");
+
         // create a table for layout
         Table mainTable = new Table();
         mainTable.setFillParent(true);
@@ -60,7 +71,7 @@ public class MainMenu implements Screen {
         labelStyle.fontColor = Color.NAVY;
 
         // create music toggle button
-        musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", skin);
+        musicButton = new TextButton(GameSettings.getInstance().isMusicEnabled() ? "Music: On" : "Music: Off", textButtonStyle);
         musicButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -88,9 +99,10 @@ public class MainMenu implements Screen {
 
         // create table for buttons at the bottom
         Table buttonTable = new Table();
+        buttonTable.top().center().padTop(20);
 
-        // add new game button
-        TextButton NewGameButton = new TextButton("New Game", skin);
+        //add new game button
+        TextButton NewGameButton = new TextButton("New Game", textButtonStyle);
         buttonTable.add(NewGameButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(20);
         NewGameButton.addListener(new ClickListener() {
             @Override
@@ -101,7 +113,7 @@ public class MainMenu implements Screen {
         });
 
         // add saved game button
-        TextButton SavedGameButton = new TextButton("Saved Game", skin);
+        TextButton SavedGameButton = new TextButton("Saved Game", textButtonStyle);
         buttonTable.add(SavedGameButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable)).padRight(20);
         SavedGameButton.addListener(new ClickListener() {
             @Override
@@ -126,7 +138,7 @@ public class MainMenu implements Screen {
 
 
         // add exit button
-        TextButton ExitButton = new TextButton("Exit", skin);
+        TextButton ExitButton = new TextButton("Exit", textButtonStyle);
         buttonTable.add(ExitButton).width(Value.percentWidth(0.25f, mainTable)).height(Value.percentWidth(0.10f, mainTable));
         ExitButton.addListener(new ClickListener() {
             @Override
@@ -135,6 +147,7 @@ public class MainMenu implements Screen {
             }
         });
         mainTable.add(buttonTable).expandY().bottom().padBottom(20);
+
     }
 
 

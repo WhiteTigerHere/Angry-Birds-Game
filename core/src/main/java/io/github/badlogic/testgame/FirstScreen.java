@@ -3,12 +3,16 @@ package io.github.badlogic.testgame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 public class FirstScreen implements Screen {
@@ -42,14 +46,35 @@ public class FirstScreen implements Screen {
         mainTable.row();
 
         // add the play button
-        TextButton playButton = new TextButton("Play", skin);
-        mainTable.add(playButton).width(200).height(80).padBottom(150).center();
+//        TextButton playButton = new TextButton("Play", skin);
+//        mainTable.add(playButton).width(200).height(80).padBottom(150).center();
+//
+//        // add click listener to play button
+//        playButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                // transition to the menuscreen
+//                game.setScreen(new MainMenu(game));
+//            }
+//        });
 
-        // add click listener to play button
+        // Load your texture for the image button (make sure the path is correct)
+        Texture buttonTexture = new Texture("playbutton.png");
+        TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+        Drawable buttonDrawable = new TextureRegionDrawable(buttonRegion);
+
+        // Create the ImageButton using the drawable
+        ImageButton playButton = new ImageButton(buttonDrawable);
+        // Customize the button to fill the screen proportionally
+        mainTable.add(playButton).width(Gdx.graphics.getWidth() * 0.95f) // Set the width to 50% of screen width
+            .height(Gdx.graphics.getHeight() * 0.95f) // Set the height to 10% of screen height
+            .padBottom(40).center();  // Add padding and center it
+
+        // Add click listener to the button
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // transition to the menuscreen
+                // Transition to the main menu screen
                 game.setScreen(new MainMenu(game));
             }
         });
