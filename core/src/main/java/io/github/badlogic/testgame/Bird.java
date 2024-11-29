@@ -1,12 +1,10 @@
 package io.github.badlogic.testgame;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
-import java.io.Serializable;
-
 public class Bird extends GameObject implements Savable{
+    private boolean isLaunched = false;
     public enum BirdType {
         RED("redbird.png", 0.6f, 0.6f, 0.8f,400),
         YELLOW("yellowbird.jpg", 0.6f, 0.6f, 0.8f,600),
@@ -66,6 +64,15 @@ public class Bird extends GameObject implements Savable{
     public BirdType getType(){
         return type;
     }
+    // Add getter and setter
+    public boolean isLaunched() {
+        return isLaunched;
+    }
+
+    public void setLaunched(boolean launched) {
+        isLaunched = launched;
+    }
+
 
     @Override
     protected Body createBody(World world) {

@@ -57,23 +57,30 @@ public class Slingshot extends GameObject {
     public SlingshotState getState() {
         return new SlingshotState(this);
     }
+    public Queue<Bird> getBirdQueue() {
+        return new LinkedList<>(birdQueue);
+    }
 
 
-    // Method to restore the state
-    public void restoreState(SlingshotState state) {
+    public void restoreState(SlingshotState state, World world) {
         setPosition(state.x, state.y);
-        if (!birdQueue.isEmpty() && state.loadedBirdIndex >= 0 && state.loadedBirdIndex < birdQueue.size()) {
-            // Restore the loaded bird by its index in the queue
-            Queue<Bird> tempQueue = new LinkedList<>();
-            for (int i = 0; i <= state.loadedBirdIndex; i++) {
-                Bird bird = birdQueue.poll();
-                if (i == state.loadedBirdIndex) {
-                    setLoadedBird(bird);
-                } else {
-                    tempQueue.add(bird);
-                }
+
+        // Clear existing queue
+        birdQueue.clear();
+        loadedBird = null;
+
+        // Restore birds from saved state
+        if (state.queuedBirds != null) {
+            for (BirdState birdState : state.queuedBirds) {
+                Bird bird = new Bird(world, birdState.x, birdState.y,
+                    Bird.BirdType.valueOf(birdState.birdType));
+                loadBird(bird);
             }
-            birdQueue.addAll(tempQueue);
+        }
+
+        // Set the loaded bird index
+        if (state.loadedBirdIndex >= 0) {
+            setLoadedBirdIndex(state.loadedBirdIndex);
         }
     }
 
@@ -149,29 +156,30 @@ public class Slingshot extends GameObject {
     }
 
 
-private void launchBird() {
-    if (loadedBird == null) {
-        System.out.println("No bird loaded to launch.");
-        return;
-    }
-
-    System.out.println("Launching bird: " + loadedBird);
-    Vector2 launchVector = startPosition.cpy().sub(loadedBird.getPosition()).scl(5f);
-    loadedBird.getBody().applyLinearImpulse(launchVector, loadedBird.getBody().getWorldCenter(), true);
-    loadedBird = null;
-
-            Timer.schedule(new Timer.Task() { // Delay loading the next bird
-                @Override
-                public void run() {
-                    if (!birdQueue.isEmpty()) {
-                        setLoadedBird(birdQueue.poll());
-                    }else{
-                        // Check the score and required points if all birds are used
-                        checkGameOverCondition();
-                    }
-                }
-            }, 1); // 1-second delay to avoid overlap
+    private void launchBird() {
+        if (loadedBird == null) {
+            System.out.println("No bird loaded to launch.");
+            return;
         }
+
+        System.out.println("Launching bird: " + loadedBird);
+        Vector2 launchVector = startPosition.cpy().sub(loadedBird.getPosition()).scl(5f);
+        loadedBird.getBody().applyLinearImpulse(launchVector, loadedBird.getBody().getWorldCenter(), true);
+        loadedBird.setLaunched(true);
+        loadedBird = null;
+
+        Timer.schedule(new Timer.Task() { // Delay loading the next bird
+            @Override
+            public void run() {
+                if (!birdQueue.isEmpty()) {
+                    setLoadedBird(birdQueue.poll());
+                }else{
+                    // Check the score and required points if all birds are used
+                    checkGameOverCondition();
+                }
+            }
+        }, 1); // 1-second delay to avoid overlap
+    }
 
 
     public int getLoadedBirdIndex() {
@@ -281,5 +289,4 @@ private void launchBird() {
         shapeRenderer.dispose(); // Dispose the ShapeRenderer
     }
 }
-
 

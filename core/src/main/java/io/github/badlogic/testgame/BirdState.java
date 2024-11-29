@@ -4,6 +4,7 @@ public class BirdState {
     public float x, y;
     public float velocityX, velocityY;
     public String birdType;
+    public boolean isLaunched;
 
     public BirdState(Bird bird) {
         this.x = bird.getBody().getPosition().x;
@@ -11,5 +12,6 @@ public class BirdState {
         this.velocityX = bird.getBody().getLinearVelocity().x;
         this.velocityY = bird.getBody().getLinearVelocity().y;
         this.birdType = bird.getType().toString();
+        this.isLaunched = bird.isLaunched();
     }
 }

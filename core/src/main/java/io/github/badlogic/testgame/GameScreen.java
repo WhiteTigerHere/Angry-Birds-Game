@@ -1,9 +1,8 @@
 package io.github.badlogic.testgame;
 
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -17,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -52,6 +50,8 @@ public class GameScreen implements Screen {
     //public int birdcount=3;
     //private OrthographicCamera camera;
     private Slingshot slingshot;
+    private InputProcessor inputProcessor;
+    private InputMultiplexer inputMultiplexer;
 
     // Setter method for slingshot
     public void setSlingshot(Slingshot slingshot) {
@@ -94,6 +94,7 @@ public class GameScreen implements Screen {
         this.game = game;
         this.levelFileName = levelFileName;
         //camera = this.getCamera();
+
 
 
         // Load the map first
@@ -203,7 +204,12 @@ public class GameScreen implements Screen {
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         setupUI();
-        Gdx.input.setInputProcessor(stage);
+       // Gdx.input.setInputProcessor(stage);
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage); // Stage processor for UI
+        inputMultiplexer.addProcessor(new InputAdapter(){});
+        Gdx.input.setInputProcessor(inputMultiplexer);
+
 
         Gdx.app.log("GameScreen", "Level created, map: " + (level.getMap() != null ? "loaded" : "null"));
     }
@@ -245,9 +251,13 @@ public class GameScreen implements Screen {
         stage.addActor(table);
     }
 
+    public InputMultiplexer getInputMultiplexer() {
+        return inputMultiplexer;
+    }
     @Override
     public void show() {
-        setInputProcessor();
+        //setInputProcessor();
+        Gdx.input.setInputProcessor(inputMultiplexer);
         score = ScoreManager.getInstance().getScore();
     }
     private int dead_count=0;
@@ -481,14 +491,34 @@ public class GameScreen implements Screen {
 
             // Now clear the game objects list
             gameScreen.getGameObjects().clear();
-            // Recreate birds
+
+
+
+            Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, gameCam,gameScreen);
+            gameScreen.setSlingshot(slingshot);
+            gameObjects.add(slingshot);
+            // Handle birds based on their launch state
             if (gameState.birds != null) {
                 for (BirdState birdState : gameState.birds) {
                     Bird bird = new Bird(world, birdState.x, birdState.y, Bird.BirdType.valueOf(birdState.birdType));
-                    bird.getBody().setLinearVelocity(birdState.velocityX, birdState.velocityY);
-                    gameScreen.getGameObjects().add(bird);
+
+                    if (birdState.isLaunched) {
+                        // For launched birds, restore them at their saved position
+                        bird.setLaunched(true);
+                        bird.getBody().setLinearVelocity(birdState.velocityX, birdState.velocityY);
+                        gameScreen.getGameObjects().add(bird);
+                    } else {
+                        // For unlaunched birds, add them to the slingshot queue
+                       // bird.setPosition(slingshot.getPosition().x, slingshot.getPosition().y);
+                        slingshot.loadBird(bird);
+                        gameScreen.getGameObjects().add(bird);
+                    }
                 }
             }
+            //gameScreen.setSlingshot(slingshot);
+
+            // Make sure to enable input processing
+            Gdx.input.setInputProcessor(gameScreen.getInputMultiplexer());
 
             // Recreate pigs
             if (gameState.pigs != null) {
@@ -506,13 +536,7 @@ public class GameScreen implements Screen {
                 }
             }
 
-            // Validate and restore slingshot
-            if (gameState.slingshot == null) {
-                throw new IllegalStateException("Slingshot state is null in GameState");
-            }
-            Slingshot slingshot = new Slingshot(world, gameState.slingshot.x, gameState.slingshot.y, 50, 100, gameScreen.getCamera(), gameScreen);
-            slingshot.setLoadedBirdIndex(gameState.slingshot.loadedBirdIndex);
-            gameScreen.setSlingshot(slingshot);
+
 
             // Log restoration success
             Gdx.app.log("GameState", "Game restored successfully");
@@ -520,6 +544,10 @@ public class GameScreen implements Screen {
             Gdx.app.error("GameState", "Error during game restoration", e);
             // Optional: handle fallback logic if restoration partially fails
         }
+    }
+
+    public InputProcessor getInputProcessor() {
+        return inputProcessor;
     }
 
     public void saveCurrentGame() {
@@ -559,6 +587,5 @@ public class GameScreen implements Screen {
 
 
 }
-
 
 
