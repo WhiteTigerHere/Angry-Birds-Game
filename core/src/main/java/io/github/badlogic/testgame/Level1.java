@@ -26,6 +26,7 @@ public class Level1 extends Level {
         //String levelfile= gameScreen.getLevelFileName();
 
         Slingshot slingshot = new Slingshot(world, 135.33f/ GameScreen.PPM, 315.33f / GameScreen.PPM, 50 / GameScreen.PPM, 100 / GameScreen.PPM, camera,gameScreen);
+        gameScreen.setSlingshot(slingshot);
         gameObjects.add(slingshot);
 
         Bird bird1 = new Bird(world, 135.33f / GameScreen.PPM, 315.33f / GameScreen.PPM, Bird.BirdType.RED);

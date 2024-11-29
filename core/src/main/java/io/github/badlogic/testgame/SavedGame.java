@@ -13,6 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 public class SavedGame implements Screen {
     private final Core game;
     private Texture backgroundTexture;
@@ -27,6 +31,34 @@ public class SavedGame implements Screen {
         this.game = game;
         this.playerName = playerName;
     }
+//    public void loadGame(String filePath) {
+//        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+//            GameState gameState = (GameState) ois.readObject();
+//
+//            this.levelNumber = gameState.levelNumber;
+//            this.theme = gameState.theme;
+//            this.score = gameState.score;
+//
+//            birds.clear();
+//            for (Bird.BirdData birdData : gameState.birds) {
+//                birds.add(Bird.fromData(world, birdData));
+//            }
+//
+//            pigs.clear();
+//            for (Pig.PigData pigData : gameState.pigs) {
+//                pigs.add(Pig.fromData(world, pigData));
+//            }
+//
+//            blocks.clear();
+//            for (Block.BlockData blockData : gameState.blocks) {
+//                blocks.add(Block.fromData(world, blockData));
+//            }
+//
+//            System.out.println("Game loaded successfully.");
+//        } catch (IOException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void show() {

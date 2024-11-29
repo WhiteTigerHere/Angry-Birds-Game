@@ -3,7 +3,12 @@ package io.github.badlogic.testgame;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+
+import java.io.Serializable;
+
+//import static jdk.internal.jimage.decompressor.CompressedResourceHeader.getSize;
 
 public class Block extends GameObject {
 
@@ -103,5 +108,44 @@ public class Block extends GameObject {
     protected Body createBody(World world) {
         return null;
     }
+
+    // Add the getPosition method to access the Block's position
+    public Vector2 getPosition() {
+        return body.getPosition();
+    }
+
+    public MaterialType getMaterialType() {
+        return materialType;
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public BlockData toData() {
+        return new BlockData(
+            getPosition().x, getPosition().y,
+            getWidth(), getHeight(),
+            materialType.name()
+        );
+    }
+
+    public static Block fromData(World world, BlockData data) {
+        return new Block(world, data.x, data.y, data.width, data.height, MaterialType.valueOf(data.materialType));
+    }
+
+    public static class BlockData implements Serializable {
+        public float x, y, width, height;
+        public String materialType;
+
+        public BlockData(float x, float y, float width, float height, String materialType) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.materialType = materialType;
+        }
+    }
+
 }
 

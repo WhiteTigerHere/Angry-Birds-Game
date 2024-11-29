@@ -4,7 +4,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
-public class Bird extends GameObject {
+import java.io.Serializable;
+
+public class Bird extends GameObject implements Savable{
     public enum BirdType {
         RED("redbird.png", 0.6f, 0.6f, 0.8f,400),
         YELLOW("yellowbird.jpg", 0.6f, 0.6f, 0.8f,600),
@@ -100,4 +102,19 @@ public class Bird extends GameObject {
     public Vector2 getPosition() {
         return body.getPosition();
     }
+
+    @Override
+    public Object getState() {
+        return new BirdState(this);
+    }
+
+    @Override
+    public void restoreState(Object state, World world) {
+        if (state instanceof BirdState) {
+            BirdState birdState = (BirdState) state;
+            this.getBody().setTransform(birdState.x, birdState.y, 0);
+            this.getBody().setLinearVelocity(birdState.velocityX, birdState.velocityY);
+        }
+    }
+
 }

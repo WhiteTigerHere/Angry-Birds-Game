@@ -3,6 +3,7 @@ package io.github.badlogic.testgame;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -23,8 +24,12 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
+import com.google.gson.Gson;
 
 public class GameScreen implements Screen {
     private final Core game;
@@ -41,11 +46,32 @@ public class GameScreen implements Screen {
     private Label scoreLabel;
     private int score = 0; // keeps track of the player's score
     public static final float PPM = 100;
+    private List<Bird> birds;
+    private List<Pig> pigs;
+    private List<Block> blocks;
     //public int birdcount=3;
     //private OrthographicCamera camera;
+    private Slingshot slingshot;
+
+    // Setter method for slingshot
+    public void setSlingshot(Slingshot slingshot) {
+        this.slingshot = slingshot;
+    }
+
+    public Slingshot getSlingshot() {
+        return slingshot;
+    }
 
     public String getLevelFileName() {
         return levelFileName;
+    }
+
+    public int getLevelNumber() {
+        return Character.getNumericValue(levelFileName.charAt(5));
+    }
+
+    public int getLevelTheme() {
+        return Character.getNumericValue(levelFileName.charAt(6));
     }
 
     public int getScore() {
@@ -54,6 +80,14 @@ public class GameScreen implements Screen {
 
     public Core getGame() {
         return game;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public ArrayList<GameObject> getGameObjects() {
+        return gameObjects;
     }
 
     public GameScreen(Core game, String levelFileName) {
@@ -175,7 +209,7 @@ public class GameScreen implements Screen {
         Skin skin=game.skin;
 
         // create pause button
-        Texture pauseTexture = new Texture(Gdx.files.internal("pausebutton.png"));
+        Texture pauseTexture = new Texture(Gdx.files.internal("pause2.png"));
         ImageButton pauseButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(pauseTexture)));
 
         pauseButton.addListener(new ClickListener() {
@@ -188,6 +222,7 @@ public class GameScreen implements Screen {
         // set up score label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = skin.getFont("default-font");
+
         scoreLabel = new Label("Score: " + score, labelStyle);
 
         // set up table for ui layout
@@ -356,6 +391,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
+        //saveCurrentGame();
     }
 
     @Override
@@ -380,6 +416,108 @@ public class GameScreen implements Screen {
 
     OrthographicCamera getCamera(){
         return gameCam;
+    }
+
+    public void saveGame(World world, Slingshot slingshot, List<GameObject> gameObjects, String levelFileName, int score, String saveFilePath) {
+        GameState gameState = new GameState(levelFileName, score);
+
+        // Serialize birds
+        for (GameObject obj : gameObjects) {
+            if (obj instanceof Bird) {
+                Bird bird = (Bird) obj;
+                gameState.birds.add(new BirdState(bird));
+            }
+        }
+
+        // Serialize pigs
+        for (GameObject obj : gameObjects) {
+            if (obj instanceof Pig) {
+                Pig pig = (Pig) obj;
+                gameState.pigs.add(new PigState(pig));
+            }
+        }
+
+        // Serialize blocks
+        for (GameObject obj : gameObjects) {
+            if (obj instanceof Block) {
+                Block block = (Block) obj;
+                gameState.blocks.add(new BlockState(block));
+            }
+        }
+
+        // Serialize slingshot
+        if (slingshot != null) {
+            gameState.slingshot = new SlingshotState(slingshot);
+            Gdx.app.log("GameScreen", "Game saved with slingshot state.");
+        } else {
+            Gdx.app.error("GameScreen", "Slingshot is null. Cannot save game.");
+        }
+
+        // Serialize game state to file
+        try (FileWriter writer = new FileWriter(saveFilePath)) {
+            Gson gson = new Gson();
+            gson.toJson(gameState, writer);
+            Gdx.app.log("GameState", "Game saved successfully to " + saveFilePath);
+        } catch (IOException e) {
+            Gdx.app.error("GameState", "Error saving game", e);
+        }
+    }
+
+    public GameState loadGame(String saveFilePath) {
+        try (FileReader reader = new FileReader(saveFilePath)) {
+            Gson gson = new Gson();
+            return gson.fromJson(reader, GameState.class);
+        } catch (IOException e) {
+            Gdx.app.error("GameState", "Error loading game", e);
+            return null;
+        }
+    }
+
+    public void restoreGame(World world, GameScreen gameScreen, GameState gameState) {
+        // Recreate birds
+        for (BirdState birdState : gameState.birds) {
+            Bird bird = new Bird(world, birdState.x, birdState.y, Bird.BirdType.valueOf(birdState.birdType));
+            bird.getBody().setLinearVelocity(birdState.velocityX, birdState.velocityY);
+            gameScreen.getGameObjects().add(bird);
+        }
+
+        // Recreate pigs
+        for (PigState pigState : gameState.pigs) {
+            Pig pig = new Pig(world, pigState.x, pigState.y, Pig.PigType.valueOf(pigState.pigType));
+            gameScreen.getGameObjects().add(pig);
+        }
+
+        // Recreate blocks
+        for (BlockState blockState : gameState.blocks) {
+            Block block = new Block(world, blockState.x, blockState.y, blockState.width, blockState.height, Block.MaterialType.valueOf(blockState.materialType));
+            gameScreen.getGameObjects().add(block);
+        }
+
+        // Restore slingshot
+        Slingshot slingshot = new Slingshot(world, gameState.slingshot.x, gameState.slingshot.y, 50, 100, gameScreen.getCamera(), gameScreen);
+        slingshot.setLoadedBirdIndex(gameState.slingshot.loadedBirdIndex);
+        gameScreen.setSlingshot(slingshot);
+
+        Gdx.app.log("GameState", "Game restored successfully");
+    }
+
+    public void saveCurrentGame() {
+        String saveFilePath = "savegame.json"; // Example save file
+        saveGame(world,slingshot,getGameObjects(), getLevelFileName(), getScore(),saveFilePath);
+    }
+
+    public void loadSavedGame() {
+        String saveFilePath = "savegame.json"; // Example save file
+        GameState gameState = loadGame(saveFilePath);
+
+        if (gameState != null) {
+            restoreGame(world, this, gameState);
+            score = gameState.score;
+            levelFileName = gameState.levelFileName;
+            Gdx.app.log("GameScreen", "Game loaded successfully");
+        } else {
+            Gdx.app.log("GameScreen", "No saved game found or error occurred");
+        }
     }
 
 

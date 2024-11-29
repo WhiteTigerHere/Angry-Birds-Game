@@ -13,6 +13,7 @@ dependencies {
   api "com.github.tommyettinger:libgdx-utils:$utilsVersion"
   api "io.github.libktx:ktx-box2d:$ktxVersion"
   api "space.earlygrey:shapedrawer:$shapeDrawerVersion"
+  api "com.google.code.gson:gson:2.8.9"
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"

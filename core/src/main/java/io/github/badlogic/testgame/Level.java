@@ -65,30 +65,7 @@ public class Level {
         return level;
     }
 
-//    protected void createGround(World world) {
-//        MapLayer groundLayer = getMap().getLayers().get("ground");
-//
-//        for (MapObject object : groundLayer.getObjects()) {
-//            if (object instanceof RectangleMapObject) {
-//                Rectangle rect = ((RectangleMapObject) object).getRectangle();
-//
-//                BodyDef bdef = new BodyDef();
-//                bdef.type = BodyDef.BodyType.StaticBody;
-//                bdef.position.set((rect.x + rect.width / 2) / PPM, (rect.y + rect.height / 2) / PPM);
-//
-//                Body body = world.createBody(bdef);
-//
-//                PolygonShape shape = new PolygonShape();
-//                shape.setAsBox(rect.width / 2 / PPM, rect.height / 2 / PPM);
-//
-//                FixtureDef fdef = new FixtureDef();
-//                fdef.shape = shape;
-//                body.createFixture(fdef);
-//
-//                shape.dispose();
-//            }
-//        }
-//    }
+
 protected void createGround(World world) {
     MapLayer groundLayer = getMap().getLayers().get("ground");
 

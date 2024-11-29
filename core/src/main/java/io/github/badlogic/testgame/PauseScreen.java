@@ -12,6 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
 public class PauseScreen implements Screen {
     private final Core game;
     private GameScreen gameScreen;
@@ -121,7 +124,10 @@ public class PauseScreen implements Screen {
         saveGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                resumeGame();
+                //gameScreen.saveGame(gameScreen.getWorld(), gameScreen.getLevel.getslingshot(),gamesavegame.dat");
+                gameScreen.saveCurrentGame();
+                game.setScreen(new MainMenu(game));
+                //resumeGame();
                 //serialization
             }
         });
@@ -160,6 +166,7 @@ public class PauseScreen implements Screen {
 
     @Override
     public void pause() {
+
     }
 
     @Override

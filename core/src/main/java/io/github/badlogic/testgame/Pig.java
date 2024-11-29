@@ -4,8 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Timer;
+
+import java.io.Serializable;
 
 public class Pig extends GameObject {
     public boolean markedForRemoval=false;
@@ -211,6 +214,34 @@ public class Pig extends GameObject {
         super.draw(batch); // Draw pig if texture is available
         if (burstSprite != null) {
             burstSprite.draw(batch); // Draw burst effect
+        }
+    }
+
+    // Add the getPosition method to access the Block's position
+    public Vector2 getPosition() {
+        return body.getPosition();
+    }
+
+    public PigData toData() {
+        return new PigData(getPosition().x, getPosition().y, type.name(), getHealth());
+    }
+
+    public static Pig fromData(World world, PigData data) {
+        Pig pig = new Pig(world, data.x, data.y, PigType.valueOf(data.type));
+        pig.takeDamage(pig.getHealth() - data.health); // Adjust health
+        return pig;
+    }
+
+    public static class PigData implements Serializable {
+        public float x, y;
+        public String type;
+        public int health;
+
+        public PigData(float x, float y, String type, int health) {
+            this.x = x;
+            this.y = y;
+            this.type = type;
+            this.health = health;
         }
     }
 

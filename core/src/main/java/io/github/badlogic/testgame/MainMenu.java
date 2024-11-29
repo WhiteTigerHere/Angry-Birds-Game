@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class MainMenu implements Screen {
     private final Core game;
+    private GameScreen gameScreen;
     private Texture backgroundTexture;
     private Stage stage;
     private Skin skin;
@@ -25,6 +26,7 @@ public class MainMenu implements Screen {
 
     public MainMenu(Core game) {
         this.game = game;
+
     }
 
     @Override
@@ -104,7 +106,9 @@ public class MainMenu implements Screen {
         SavedGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new SavedGame(game, playerNameField.getName()));
+                gameScreen=new GameScreen(game,null);
+                gameScreen.loadSavedGame();
+                //game.setScreen(new SavedGame(game, playerNameField.getName()));
             }
         });
 
@@ -119,6 +123,7 @@ public class MainMenu implements Screen {
         });
         mainTable.add(buttonTable).expandY().bottom().padBottom(20);
     }
+
 
     @Override
     public void render(float delta) {

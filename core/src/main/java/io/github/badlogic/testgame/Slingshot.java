@@ -13,7 +13,7 @@ import java.util.Queue;
 
 public class Slingshot extends GameObject {
     private Bird loadedBird;
-    private final Queue<Bird> birdQueue = new LinkedList<>();
+    private Queue<Bird> birdQueue = new LinkedList<>();
     private boolean isDragging = false;
     private final Vector2 startPosition;
     private final Camera camera;
@@ -45,6 +45,31 @@ public class Slingshot extends GameObject {
 
     private Vector2 calculateVelocity(Vector2 start, Vector2 end, float multiplier) {
         return start.cpy().sub(end).scl(multiplier);
+    }
+
+
+    // Method to save the state
+    public SlingshotState getState() {
+        return new SlingshotState(this);
+    }
+
+
+    // Method to restore the state
+    public void restoreState(SlingshotState state) {
+        setPosition(state.x, state.y);
+        if (!birdQueue.isEmpty() && state.loadedBirdIndex >= 0 && state.loadedBirdIndex < birdQueue.size()) {
+            // Restore the loaded bird by its index in the queue
+            Queue<Bird> tempQueue = new LinkedList<>();
+            for (int i = 0; i <= state.loadedBirdIndex; i++) {
+                Bird bird = birdQueue.poll();
+                if (i == state.loadedBirdIndex) {
+                    setLoadedBird(bird);
+                } else {
+                    tempQueue.add(bird);
+                }
+            }
+            birdQueue.addAll(tempQueue);
+        }
     }
 
     protected void renderString() {
@@ -118,23 +143,7 @@ public class Slingshot extends GameObject {
         }
     }
 
-//    private void launchBird() {
-//        if (loadedBird != null) {
-//            System.out.println("Launching bird: " + loadedBird);
-//            Vector2 launchVector = startPosition.cpy().sub(loadedBird.getPosition()).scl(5f);
-//            loadedBird.getBody().applyLinearImpulse(launchVector, loadedBird.getBody().getWorldCenter(), true);
-//            loadedBird = null;
-//
-//            Timer.schedule(new Timer.Task() { // Delay loading the next bird
-//                @Override
-//                public void run() {
-//                    if (!birdQueue.isEmpty()) {
-//                        setLoadedBird(birdQueue.poll());
-//                    }
-//                }
-//            }, 1); // 1-second delay to avoid overlap
-//        }
-//    }
+
 private void launchBird() {
     if (loadedBird == null) {
         System.out.println("No bird loaded to launch.");
@@ -159,6 +168,40 @@ private void launchBird() {
             }, 1); // 1-second delay to avoid overlap
         }
 
+
+    public int getLoadedBirdIndex() {
+        int index = 0;
+        for (Bird bird : birdQueue) {
+            if (bird == loadedBird) {
+                return index;
+            }
+            index++;
+        }
+        return -1; // If no bird is loaded
+    }
+
+    public void setLoadedBirdIndex(int index) {
+        if (index >= 0 && index < birdQueue.size()) {
+            // Create a temporary queue to store birds up to the index
+            Queue<Bird> tempQueue = new LinkedList<>();
+            int i = 0;
+
+            // Iterate over the birdQueue to find the bird at the given index
+            for (Bird bird : birdQueue) {
+                if (i == index) {
+                    // Set the found bird as the loaded bird
+                    setLoadedBird(bird);
+                } else {
+                    tempQueue.add(bird);
+                }
+                i++;
+            }
+            // Restore the remaining birds back to the queue
+            birdQueue = tempQueue;
+        } else {
+            System.out.println("Invalid index, no bird set.");
+        }
+    }
 
     private void checkGameOverCondition() {
         // Determine required points for the level
@@ -187,7 +230,7 @@ private void launchBird() {
                     public void run() {
                         gameScreen.getGame().setScreen(new LostLevel(gameScreen.getGame(),gameScreen.getLevelFileName())); // Transition to LostLevel screen
                     }
-                }, 2f); // 2-second delay
+                }, 3f); // 3-second delay
             });
         }
     }
@@ -225,34 +268,7 @@ private void launchBird() {
         }
     }
 
-//    public void update(float delta) {
-//        if (Gdx.input.isTouched()) {
-//            Vector3 touchPos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-//            camera.unproject(touchPos3D);
-//            Vector2 touchPos = new Vector2(touchPos3D.x, touchPos3D.y);
-//
-//            if (!isDragging && isInsideSlingArea(touchPos)) {
-//                isDragging = true;
-//            }
-//
-//            if (isDragging) {
-//                // Limit dragging distance
-//                float distance = touchPos.dst(startPosition);
-//                if (distance > maxDragDistance) {
-//                    Vector2 direction = touchPos.sub(startPosition).nor();
-//                    touchPos.set(startPosition.x + direction.x * maxDragDistance,
-//                        startPosition.y + direction.y * maxDragDistance);
-//                }
-//                loadedBird.setPosition(touchPos.x, touchPos.y);
-//                loadedBird.getBody().setTransform(touchPos.x, touchPos.y, 0);  // Ensure body matches visual for dragging
-//            }
-//        } else if (isDragging) {
-//            if (loadedBird != null) {
-//                launchBird();
-//            }
-//            isDragging = false;
-//        }
-//    }
+
 
     @Override
     public void dispose() {
