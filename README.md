@@ -11,6 +11,7 @@ Jaitrika Reddy, 2023333
 ## Overview
 
 This Angry Birds-inspired game is a fully functioning 2D physics-based game created using the LibGDX framework. Players launch birds at structures to destroy pigs, utilizing different bird abilities and physics interactions. The game features complete gameplay mechanics, level progression, serialization for saving/loading game states, and JUnit testing for quality assurance.
+ ![Game Logo](assets/firstscreen.png)
 
 ---
 
